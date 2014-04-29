@@ -16,6 +16,20 @@ class PiServer {
          *The port the server is connecting to
          */
         int _port;
+
+        /**
+        *This is a method used to create a tcp connection.
+        *This method binds to a port, then calls listenForClients(),
+        *which blocks the thread and requests replies to messages
+        *via the PiParser singleton class
+        */
+        void connectToPort(char *port);
+
+        /**
+        *Wait to accept new client connections. Manage client messages
+        *and send replies back using the PiParser singleton
+        */
+        void listenForClients();
 };
 
 #endif
