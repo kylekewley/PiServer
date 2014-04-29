@@ -23,13 +23,24 @@ class PiServer {
         *which blocks the thread and requests replies to messages
         *via the PiParser singleton class
         */
-        void connectToPort(char *port);
+        void connectToPort(const char *port);
 
         /**
         *Wait to accept new client connections. Manage client messages
         *and send replies back using the PiParser singleton
         */
-        void listenForClients();
+        void listenForClients(int serverfd);
+
+        /**
+        *
+        *@return    The file descriptor for the new client or -1 if there was an error
+        */
+        int connectToClient(int serverfd, fd_set *masterfds, int *maxfd);
+
+        /**
+        *Gets the IP address from a new client connection
+        */
+        void *getInternetAddress(struct sockaddr *sa);
 };
 
 #endif
