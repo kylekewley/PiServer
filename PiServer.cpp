@@ -1,24 +1,14 @@
 #include "PiServer.h"
-/*
+
 #include <iostream>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netdb.h>
 #include <netinet/in.h>
-*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <vector>
-#include <map>
-#include <bitset>
+
+#include <unistd.h>
+
 
 
 
@@ -57,7 +47,7 @@ void PiServer::connectToPort(char *port) {
 		setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
 
 		//try to bind
-		if (bind(socketfd, p->ai_addr, p->ai_addrlen) < 0) {
+		if (::bind(socketfd, p->ai_addr, p->ai_addrlen) == -1) {
 			//Failed to bind. Try the next one
 			close(socketfd);
 			continue;
