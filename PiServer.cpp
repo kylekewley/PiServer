@@ -16,8 +16,8 @@
 *before attempted connections recieve a Connection
 *Refused error.
 */
-static const int clientBacklog = 16;
-
+static const int kClientBacklog = 16;
+static const int kBufferSize = 8192;
 
 using namespace std;
 
@@ -63,7 +63,7 @@ void PiServer::connectToPort(const char *port) {
 		}
 
 		//Successfully bound to a socket. Stop trying to bind to others
-		break; 
+		break;
 	}
 
 	if (p == NULL) { 
@@ -75,14 +75,14 @@ void PiServer::connectToPort(const char *port) {
 
 	//Mark the socket as ready to listen for incoming connections
 
-	if (listen(serverfd, clientBacklog) == -1) {
+	if (listen(serverfd, kClientBacklog) == -1) {
 		//Error setting listen flag, wont listen for client connections
 		throw runtime_error("Error setting socket listen flag");
 	}
 	//
 	//Now we should be bound to a port and ready to listen for clients
 	//
-	cout << "PiServer is waiting for client connections..." << endl;
+	cout << "PiServer is waiting for client connections on port " << to_string(_port) << "..." << endl;
 	listenForClients(serverfd);
 }
 
@@ -106,13 +106,15 @@ void PiServer::listenForClients(int serverfd) {
 	//Add serverfd to the master set
 	FD_SET(serverfd, &masterfds);
 
+	//Create a buffer for incoming messages
+	char buffer[kBufferSize];
 	//Loop forever listening for clients
 	for(;;) {
 		//nfds is the highest numbered file descriptor plus 1
 		int nfds = maxfd + 1;
 
         readfds = masterfds; //We want to check if all sockets can be read and written to
-        writefds = masterfds; 
+        writefds = masterfds;
 
 		if (select(nfds, &readfds, &writefds, NULL, NULL) == -1) {
 			//There was an error with the select call
@@ -123,12 +125,31 @@ void PiServer::listenForClients(int serverfd) {
 		//If serverfd is in read_fds, we have a new connection
 
 		//Loop through each file descriptor and check whether they're readable
-		for (int sockfd = 0; sockfd < maxfd; ++sockfd) {
+		for (int sockfd = 0; sockfd <= maxfd; ++sockfd) {
 			if (FD_ISSET(sockfd, &readfds)) {
 				//sockfd can be read
 				if (sockfd == serverfd) {
 					//We have a new connection
+					cout << "Connecting to new client" << endl;
+					connectToClient(serverfd, &masterfds, &maxfd);
+				}else {
+					//We have a message
+					ssize_t length = recv(sockfd, buffer, kBufferSize, 0);
 
+					if (length <= 0) {
+						if (length == 0) {
+							//sockfd hung up
+							cout << "Socket " << to_string(sockfd) << " hung up" << endl;
+						}else {
+							//Error recieving data
+							cerr << "Error recieving data" << endl;
+						}
+						//Close sockfd and remove from the master set
+                        close(sockfd);
+                        FD_CLR(sockfd, &masterfds);
+					}else {
+						//Read the message
+					}
 				}
 			}
 		}
