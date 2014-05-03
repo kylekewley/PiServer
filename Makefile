@@ -1,7 +1,10 @@
-OBJS := ServerTests.o  PiServer.o 
+SOURCES := ServerTests.cc  PiServer.cc PiParser.cc PiHeader.pb.cc
+OBJS = $(SOURCES:%.cc=%.o)
+
 CFLAGS := -std=c++11 -pthread 
 EXENAME := PiServer.out
 LINKFLAGS := -lpthread
+
 # link
 PiServer: $(OBJS)
 	g++ $(OBJS) -o $(EXENAME) $(LINKFLAGS)
@@ -10,9 +13,9 @@ PiServer: $(OBJS)
 -include $(OBJS:.o=.d)
 
 # compile and generate dependency info
-%.o: %.cpp
-	g++ -c $(CFLAGS) $*.cpp -o $*.o 
-	g++ -MM $(CFLAGS) $*.cpp > $*.d
+%.o: %.cc
+	g++ -c $(CFLAGS) $*.cc -o $*.o 
+	g++ -MM $(CFLAGS) $*.cc > $*.d
 
 .c.o:
 	$(CC) -c $*.c -o $*.o
@@ -22,3 +25,5 @@ PiServer: $(OBJS)
 clean:
 	rm -f PiServer *.o *.d
 
+debug:
+	echo $(OBJS)
