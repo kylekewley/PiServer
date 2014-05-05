@@ -30,7 +30,7 @@ bool PiParser::parserRangeValid(CustomParserWrapper &wrapper) {
 	return _parserSet.find(wrapper) == _parserSet.end();
 }
 
-char* PiParser::parseData(char *data, int dataLength) {
+std::string PiParser::parseData(std::string &data, int dataLength) {
 	//Start by parsing a PiHeader
 	return NULL;
 }
