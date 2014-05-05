@@ -1,9 +1,9 @@
-SOURCES := ServerTests.cc  PiServer.cc PiParser.cc PiHeader.pb.cc
+SOURCES := ServerTests.cc  PiServer.cc PiParser.cc PiHeader.pb.cc TestParser.cc CustomBufferParser.cc
 OBJS = $(SOURCES:%.cc=%.o)
 
 CFLAGS := -std=c++11 -pthread 
 EXENAME := PiServer.out
-LINKFLAGS := -lpthread
+LINKFLAGS := -lpthread -lprotobuf 
 
 # link
 PiServer: $(OBJS)

@@ -1,6 +1,6 @@
 #include "PiParser.h"
-#include <map>
-
+#include "PiHeader.pb.h"
+#include "CustomParserWrapper.h"
 PiParser& PiParser::getInstance() {
 	static PiParser sharedInstance;
 
@@ -11,9 +11,27 @@ PiParser::PiParser() {
 
 }
 
-template <class T, class E> bool PiParser::registerParserForID(E(*parseData)(T data, PiHeader header), int functionID) {
-	return false;
+bool PiParser::registerParserForID(CustomParser &parser, int functionIDStart, int functionIDEnd) {
+	//Wrap the parser
+
+	Range r = Range(functionIDStart, functionIDEnd);
+	CustomParserWrapper wrapper = CustomParserWrapper(r, parser);
+	
+	if (!parserRangeValid(wrapper)) {
+		return false;
+	}
+
+	_parserSet.insert(wrapper);
+	return true;
 }
-bool PiParser::registerBinaryParserForID(char*(*binaryParser)(char *data, PiHeader header), int functionID) {
-	return false;
+
+
+bool PiParser::parserRangeValid(CustomParserWrapper &wrapper) {
+	return _parserSet.find(wrapper) == _parserSet.end();
 }
+
+char* PiParser::parseData(char *data, int dataLength) {
+	//Start by parsing a PiHeader
+	return NULL;
+}
+
