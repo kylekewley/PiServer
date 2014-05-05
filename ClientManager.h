@@ -17,7 +17,7 @@
 
 #include <map>
 #include <string>
-
+#include "PiHeader.pb.h"
 typedef enum MessageStatus
 {
 	MessageStatusNone, 		//Waiting for a message
@@ -27,16 +27,35 @@ typedef enum MessageStatus
 typedef struct ClientStatus {
 	MessageStatus messageStatus;
 	std::string message;
+	PiHeader header;
 	int receivedLength;
-	int totalLength;
-	bool allowsPartial;
+	int remainingLength;
 }ClientStatus;
 
 class ClientManager {
 public:
 	ClientManager();
+
+	/**
+	*Register a new client to track
+	*/
+	void newClientConnection(int portNumber);
+
+	/**
+	*The PiServer calls this method whenever a message is received.
+	*The ClientManager handles the message by storing it if it's incomplete,
+	*or handing the complete message off to the PiParser. The PiParser returns
+	*a response that the ClientManager sends back to the PiServer.
+	*/
+	void receivedMessageOnPort(const char *message, PiHeader &header, int messageLength, int portNumber);
+
+	/**
+	*destroys the ClientStatus object associated with the port
+	*/
+	void clientDisconnected(int portNumber);
+
 private:
-	std::map<int,ClientStatus> clientStatuses;
+	std::map<int,ClientStatus> clientStatus;
 
 };
 

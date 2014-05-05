@@ -16,7 +16,7 @@ public:
 
 	bool registerParserForID(CustomParser &parser, int functionIDStart, int functionIDEnd);
 
-	char* parseData(char *data, int dataLength);
+	std::string parseData(std::string &data, int dataLength);
 
 	/**
 	*data is prefixed with a 
