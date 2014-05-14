@@ -16,7 +16,7 @@ public:
 
 	bool registerParserForID(CustomParser &parser, int functionIDStart, int functionIDEnd);
 
-	const char* parseData(PiHeader &header, std::string &data, int dataLength);
+	std::vector<char> parseData(PiHeader &header, std::vector<char> data);
 
 	/**
 	*data is prefixed with a 

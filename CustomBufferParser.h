@@ -10,7 +10,7 @@ protected:
 public:
 	CustomBufferParser(ProtocolBuffer *inputMessage_): inputMessage(inputMessage_) {};
 	~CustomBufferParser();
-	const char* parse(const char *data, PiHeader &header);
+	std::vector<char> parse(std::vector<char> data, PiHeader &header);
 	virtual ProtocolBuffer &parse(ProtocolBuffer *data, PiHeader &header) = 0;
 	
 };

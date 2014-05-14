@@ -16,7 +16,7 @@ void ClientManager::newClientConnection(int portNumber) {
 	clientStatus[portNumber] = newStatus;
 }
 
-std::string ClientManager::receivedMessageOnPort(const char *message, int messageLength, int portNumber) {
+std::vector<char> ClientManager::receivedMessageOnPort(const char *message, int messageLength, int portNumber) {
 	if (!clientStatus.count(portNumber)) {
 		newClientConnection(portNumber);
 	}
@@ -31,22 +31,23 @@ std::string ClientManager::receivedMessageOnPort(const char *message, int messag
 		PiHeader header;
 		header.ParseFromArray(message+2, headerLength);
 
-		status.message = std::string(message+2+headerLength, messageLength);
+        //Initialize from a char array
+        const char *messageStart = message+2+headerLength;
+        const char *messageEnd = messageStart+messageLength;
+		status.message = std::vector<char>(messageStart, messageEnd);
 		status.messageStatus = MessageStatusPartial;
 		status.header = header;
 	}else {
 		//Already part of an old message
-		status.message.append(message, messageLength);
+		status.message.insert(status.message.end(), message, message+messageLength);
 	}
 
-	std::string response = NULL;
+	std::vector<char> response = std::vector<char>();
 	//Check if message is complete
-	if (status.header.messagelength() - status.message.length() <= 0) {
+	if (status.header.messagelength() - status.message.size() <= 0) {
 		//Parse it and clear
 		status.messageStatus = MessageStatusNone;
-		const char *cResponse;
-		cResponse = PiParser::getInstance().parseData(status.header, status.message, status.message.length());
-		response = std::string(cResponse);
+        response = PiParser::getInstance().parseData(status.header, status.message);
 	}
 
 	return response;

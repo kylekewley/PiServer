@@ -26,7 +26,7 @@ typedef enum MessageStatus
 
 typedef struct ClientStatus {
 	MessageStatus messageStatus; //Either no message or a partial message
-	std::string message;		//Copy of the current message char array buffer
+    std::vector<char> message;		//Copy of the current message char array buffer
 	PiHeader header;
 }ClientStatus;
 
@@ -45,7 +45,7 @@ public:
 	*or handing the complete message off to the PiParser. The PiParser returns
 	*a response that the ClientManager sends back to the PiServer.
 	*/
-	std::string receivedMessageOnPort(const char *message, int messageLength, int portNumber);
+    std::vector<char> receivedMessageOnPort(const char *message, int messageLength, int portNumber);
 
 	/**
 	*destroys the ClientStatus object associated with the port
