@@ -2,6 +2,8 @@
 #define Pi_Server_h
 
 #include <iostream>
+#include "ClientManager.h"
+
 using namespace std;
 
 class PiServer {
@@ -17,6 +19,10 @@ class PiServer {
          */
         int _port;
 
+        /**
+        *Manages the status of client connections and messages
+        */
+        ClientManager _clientManager;
         /**
         *This is a method used to create a tcp connection.
         *This method binds to a port, then calls listenForClients(),

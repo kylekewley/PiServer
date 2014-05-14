@@ -150,7 +150,7 @@ void PiServer::listenForClients(int serverfd) {
                         FD_CLR(sockfd, &masterfds);
 					}else {
 						//Read the message
-
+						_clientManager.receivedMessageOnPort(buffer, length, sockfd);
 					}
 				}
 			}
@@ -176,6 +176,7 @@ int PiServer::connectToClient(int serverfd, fd_set *masterfds, int *maxfd) {
 		char remoteIP[INET6_ADDRSTRLEN];
 		cout << "New connection from " << inet_ntop(remoteaddr.ss_family, getInternetAddress((struct sockaddr*)&remoteaddr), remoteIP, INET6_ADDRSTRLEN)
 			<<" on socket " << to_string(clientfd) << endl;
+		
 	}
 
 	return clientfd;

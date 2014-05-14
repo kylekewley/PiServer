@@ -9,6 +9,7 @@ protected:
 	ProtocolBuffer *inputMessage;
 public:
 	CustomBufferParser(ProtocolBuffer *inputMessage_): inputMessage(inputMessage_) {};
+	~CustomBufferParser();
 	const char* parse(const char *data, PiHeader &header);
 	virtual ProtocolBuffer &parse(ProtocolBuffer *data, PiHeader &header) = 0;
 	

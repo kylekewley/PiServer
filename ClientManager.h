@@ -21,15 +21,13 @@
 typedef enum MessageStatus
 {
 	MessageStatusNone, 		//Waiting for a message
-	MessageStatusWaiting,	//Has a partial message
+	MessageStatusPartial,	//Has a partial message
 }MessageStatus;
 
 typedef struct ClientStatus {
-	MessageStatus messageStatus;
-	std::string message;
+	MessageStatus messageStatus; //Either no message or a partial message
+	std::string message;		//Copy of the current message char array buffer
 	PiHeader header;
-	int receivedLength;
-	int remainingLength;
 }ClientStatus;
 
 class ClientManager {
@@ -47,7 +45,7 @@ public:
 	*or handing the complete message off to the PiParser. The PiParser returns
 	*a response that the ClientManager sends back to the PiServer.
 	*/
-	void receivedMessageOnPort(const char *message, PiHeader &header, int messageLength, int portNumber);
+	std::string receivedMessageOnPort(const char *message, int messageLength, int portNumber);
 
 	/**
 	*destroys the ClientStatus object associated with the port

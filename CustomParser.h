@@ -6,7 +6,7 @@
 class CustomParser {
 public:
 	CustomParser() {};
-	virtual const char* parse(const char *data, PiHeader &header) = 0;
+	virtual const char* parse(const char *data, PiHeader &header) {return NULL;};
 };
 
 #endif
