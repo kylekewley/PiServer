@@ -10,6 +10,10 @@
 
 
 #include <unistd.h>
+#include <fcntl.h>
+
+#include "PingParser.h"
+#include "TestParser.h"
 
 
 /**
@@ -23,6 +27,10 @@ static const int kBufferSize = 8192;
 using namespace std;
 
 PiServer::PiServer(int port): _port(port) {
+    //Add the default parsers
+    registerDefaultParsers();
+    
+    //Start the server
 	string portString = to_string(port);
 	connectToPort(portString.c_str());
 }
@@ -48,6 +56,8 @@ void PiServer::connectToPort(const char *port) {
 	//Loop through each returned addrinfo struct in the linked list
 	for (p = ai; p != NULL; p = p->ai_next) {
 		serverfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        //Set to nonblocking
+        fcntl(serverfd, F_SETFL, O_NONBLOCK);
 
 		if (serverfd < 0)
 			continue; //Skip
@@ -151,13 +161,13 @@ void PiServer::listenForClients(int serverfd) {
 					}else {
 						//Read the message
 						vector<char> response = _clientManager.receivedMessageOnPort(buffer, length, sockfd);
-                        messageQueue[sockfd-1].insert(messageQueue[sockfd-1].end(), response.begin(), response.end());
+                        messageQueue[sockfd].insert(messageQueue[sockfd].end(), response.begin(), response.end());
 					}
 				}
 			}
-            if (FD_ISSET(sockfd, &writefds)) {
+            if (FD_ISSET(sockfd, &masterfds) && sockfd != serverfd) {
                 //See if we have a message to send
-                vector<char> &toSend = messageQueue[sockfd-1];
+                vector<char> &toSend = messageQueue[sockfd];
                 if (toSend.size() != 0) {
                     size_t sentLength = send(sockfd, toSend.data(), toSend.size(), MSG_DONTWAIT);
                     if (sentLength > 0) {
@@ -182,18 +192,22 @@ int PiServer::connectToClient(int serverfd, fd_set *masterfds, int *maxfd) {
         FD_SET(clientfd, masterfds);
 		if (clientfd > *maxfd) {    // keep track of the max
 			*maxfd = clientfd;
-            //Add space for outgoing messages to the new connection and empty out any current message
-            messageQueue.reserve(clientfd);
-            messageQueue[clientfd-1] = vector<char>();
 		}
-
+        
+        //Make sure we have an empty messageQueue for the new client
+        messageQueue[clientfd] = vector<char>();
+   
 		//Print out where we got a connection from
 		char remoteIP[INET6_ADDRSTRLEN];
 		cout << "New connection from " << inet_ntop(remoteaddr.ss_family, getInternetAddress((struct sockaddr*)&remoteaddr), remoteIP, INET6_ADDRSTRLEN)
 			<<" on socket " << to_string(clientfd) << endl;
-		
-	}
-
+	}else {
+        if (errno == EWOULDBLOCK || errno == EAGAIN) {
+            cerr << "Error accepting socket that would block" << endl;
+        }else {
+            cerr << "Accepting new client failed with error number: " << to_string(errno) << endl;
+        }
+    }
 	return clientfd;
 }
 
@@ -203,4 +217,9 @@ void * PiServer::getInternetAddress(struct sockaddr *sa) {
 	}
     
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
+void PiServer::registerDefaultParsers() {
+    PiParser::getInstance().registerParserForID(new PingParser(), kPingParserID, kPingParserID);
+    PiParser::getInstance().registerParserForID(new TestParser(), kTestParserID, kTestParserID);
 }

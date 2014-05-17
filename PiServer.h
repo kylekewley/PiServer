@@ -22,7 +22,7 @@ private:
     /**
      *The messageQueue holds outgoing messages based on each connection's socketfd
      */
-    vector<vector<char>> messageQueue;
+    map<int, vector<char>> messageQueue;
     /**
     *Manages the status of client connections and messages
     */
@@ -51,6 +51,12 @@ private:
     *Gets the IP address from a new client connection
     */
     void *getInternetAddress(struct sockaddr *sa);
+    
+    /**
+     *Simple subroutine to register the default parsers with
+     *the ClientManager upon initialization
+     */
+    void registerDefaultParsers();
 };
 
 #endif
