@@ -1,6 +1,6 @@
 #include "PiParser.h"
 #include "PiHeader.pb.h"
-#include "CustomParserWrapper.h"
+
 PiParser& PiParser::getInstance() {
 	static PiParser sharedInstance;
 
@@ -11,7 +11,7 @@ PiParser::PiParser() {
 
 }
 
-bool PiParser::registerParserForID(CustomParser &parser, int functionIDStart, int functionIDEnd) {
+bool PiParser::registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd) {
 	//Wrap the parser
 
 	Range r = Range(functionIDStart, functionIDEnd);
@@ -37,7 +37,7 @@ std::vector<char> PiParser::parseData(PiHeader &header, std::vector<char> data) 
 		return std::vector<char>(); //No response
 	}
     CustomParserWrapper wrapper = *iterator;
-	std::vector<char> response = wrapper.parser.parse(data, header);
+	std::vector<char> response = wrapper.parser->parse(data);
 
 	return response;
 }

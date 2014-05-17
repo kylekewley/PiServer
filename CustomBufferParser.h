@@ -4,14 +4,25 @@
 #include "Constants.h"
 #include "CustomParser.h"
 
-class CustomBufferParser : public CustomParser {
+
+template <typename T> class CustomBufferParser : public CustomParser {
 protected:
-	ProtocolBuffer *inputMessage;
+	T *inputMessage;
 public:
-	CustomBufferParser(ProtocolBuffer *inputMessage_): inputMessage(inputMessage_) {};
-	~CustomBufferParser();
-	std::vector<char> parse(std::vector<char> data, PiHeader &header);
-	virtual ProtocolBuffer &parse(ProtocolBuffer *data, PiHeader &header) = 0;
+    ~CustomBufferParser() {delete inputMessage;};
+	CustomBufferParser(): inputMessage(new T()) {
+        static_assert(std::is_base_of<ProtocolBuffer, T>::value, "T not derived from google::protocol::MessageLite");
+    };
+	std::vector<char> parse(std::vector<char> data);
+    
+    /**
+     *Parse the MessageLite object and return another MessageLite 
+     *object. The returned object will be deleted by the calling
+     *function.
+     *@param    data    The data to parse
+     *@return   A new ProtocolBuffer object to be sent back to the client
+     */
+	virtual ProtocolBuffer *parseBuffer(const T *data) = 0;
 	
 };
 

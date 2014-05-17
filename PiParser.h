@@ -2,11 +2,10 @@
 #define Pi_Parser_h
 
 #include "Constants.h"
-#include "CustomBufferParser.h"
 #include "CustomParserWrapper.h"
-#include "TestParser.h"
 #include <set>
 
+class PiHeader;
 
 class PiParser
 {
@@ -14,7 +13,7 @@ public:
 	static PiParser& getInstance();
 
 
-	bool registerParserForID(CustomParser &parser, int functionIDStart, int functionIDEnd);
+	bool registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd);
 
 	std::vector<char> parseData(PiHeader &header, std::vector<char> data);
 

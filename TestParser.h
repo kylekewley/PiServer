@@ -2,12 +2,12 @@
 #define Test_Parser_h
 
 #include "Constants.h"
-#include "CustomBufferParser.h"
+#include "CustomBufferParser.imp.h"
+class TestMessage;
 
-
-class TestParser : public CustomBufferParser {
+class TestParser : public CustomBufferParser<TestMessage> {
 public:
 	TestParser();
-	ProtocolBuffer &parse(ProtocolBuffer *data, PiHeader &header);
+	ProtocolBuffer *parseBuffer(const TestMessage *data);
 };
 #endif

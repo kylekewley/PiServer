@@ -1,11 +1,8 @@
 #ifndef Custom_Parser_Wrapper_h
 #define Custom_Parser_Wrapper_h
 
-#include <utility>
-#include "PiHeader.pb.h"
 #include "Constants.h"
 #include "CustomParser.h"
-#include "TestParser.h"
 
 class CustomParserWrapper {
 public:
@@ -17,9 +14,9 @@ public:
 	/**
 	*The object used to parse the the ParserMessage
 	*/
-	CustomParser parser;
+	CustomParser *parser;
 
-	CustomParserWrapper(Range r, CustomParser &p): range(r), parser(p) {};
+	CustomParserWrapper(Range r, CustomParser *p): range(r), parser(p) {};
 	CustomParserWrapper(int parserID): range(Range(parserID, parserID)) {};
 };
 

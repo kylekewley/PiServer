@@ -17,7 +17,7 @@
 *before attempted connections recieve a Connection
 *Refused error.
 */
-static const int kClientBacklog = 16;
+static const int kClientBacklog = 10;
 static const int kBufferSize = 8192;
 
 using namespace std;
@@ -150,10 +150,22 @@ void PiServer::listenForClients(int serverfd) {
                         FD_CLR(sockfd, &masterfds);
 					}else {
 						//Read the message
-						_clientManager.receivedMessageOnPort(buffer, length, sockfd);
+						vector<char> response = _clientManager.receivedMessageOnPort(buffer, length, sockfd);
+                        messageQueue[sockfd-1].insert(messageQueue[sockfd-1].end(), response.begin(), response.end());
 					}
 				}
 			}
+            if (FD_ISSET(sockfd, &writefds)) {
+                //See if we have a message to send
+                vector<char> &toSend = messageQueue[sockfd-1];
+                if (toSend.size() != 0) {
+                    size_t sentLength = send(sockfd, toSend.data(), toSend.size(), MSG_DONTWAIT);
+                    if (sentLength > 0) {
+                        //Didn't get an error
+                        toSend.erase(toSend.begin(), toSend.begin()+sentLength);
+                    }
+                }
+            }
 		}
 	}
 }
@@ -170,6 +182,9 @@ int PiServer::connectToClient(int serverfd, fd_set *masterfds, int *maxfd) {
         FD_SET(clientfd, masterfds);
 		if (clientfd > *maxfd) {    // keep track of the max
 			*maxfd = clientfd;
+            //Add space for outgoing messages to the new connection and empty out any current message
+            messageQueue.reserve(clientfd);
+            messageQueue[clientfd-1] = vector<char>();
 		}
 
 		//Print out where we got a connection from

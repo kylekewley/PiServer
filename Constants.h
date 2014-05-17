@@ -5,7 +5,7 @@
 
 
 
-typedef ::google::protobuf::Message ProtocolBuffer;
+typedef ::google::protobuf::MessageLite ProtocolBuffer;
 typedef std::pair<int, int> Range;
 
 #endif

@@ -1,7 +1,8 @@
 #include "ClientManager.h"
 #include "PiParser.h"
 #include <netinet/in.h>
-
+#include <iostream>
+using namespace std;
 #pragma mark - Constructors
 ClientManager::ClientManager() {
 
@@ -25,15 +26,18 @@ std::vector<char> ClientManager::receivedMessageOnPort(const char *message, int 
 	if (status.messageStatus == MessageStatusNone) {
 		//Brand new message. Get the header length and header
 		uint16_t headerLength;
-		memcpy(&headerLength, message, sizeof(headerLength));
+        int prefixBytes = sizeof(headerLength);
+		memcpy(&headerLength, message, prefixBytes);
 		headerLength = ntohs(headerLength);
 
 		PiHeader header;
-		header.ParseFromArray(message+2, headerLength);
-
+		header.ParseFromArray(message+prefixBytes, headerLength);
+        
+        cout << "Message size: " << header.messagelength() << endl;
         //Initialize from a char array
-        const char *messageStart = message+2+headerLength;
-        const char *messageEnd = messageStart+messageLength;
+        const char *messageStart = message+prefixBytes+headerLength;
+        const char *messageEnd = messageStart+header.messagelength();
+        
 		status.message = std::vector<char>(messageStart, messageEnd);
 		status.messageStatus = MessageStatusPartial;
 		status.header = header;
@@ -43,6 +47,9 @@ std::vector<char> ClientManager::receivedMessageOnPort(const char *message, int 
 	}
 
 	std::vector<char> response = std::vector<char>();
+    
+    cout << "Message on port: " << to_string(portNumber) << " total size: " << to_string(status.header.messagelength()) << " received size: " << status.message.size() << endl;
+
 	//Check if message is complete
 	if (status.header.messagelength() - status.message.size() <= 0) {
 		//Parse it and clear

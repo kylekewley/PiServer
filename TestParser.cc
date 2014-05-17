@@ -1,12 +1,22 @@
 #include "TestParser.h"
-#include "PiHeader.pb.h"
+#include "TestMessage.pb.h"
+#include <iostream>
 
+using namespace std;
 //Pass in the type of protocol buffer to parse with
-TestParser::TestParser(): CustomBufferParser(new PiHeader()){
+TestParser::TestParser() {
 
 }
-
-ProtocolBuffer& TestParser::parse(ProtocolBuffer *data, PiHeader &header) {
-	
-	return header;
+ProtocolBuffer *TestParser::parseBuffer(const TestMessage *data) {
+	TestMessage *message = new TestMessage();
+    string responseString = string("Response to: ");
+    if (data->has_message()) {
+        responseString += data->message();
+    }else {
+        responseString += "Empty Message";
+    }
+    message->set_message(responseString);
+    
+    cout << "Sending response " << responseString << endl;
+    return message;
 }
