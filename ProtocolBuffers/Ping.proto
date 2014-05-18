@@ -1,0 +1,4 @@
+
+message Ping {
+	optional uint32 sentTime = 1;
+}

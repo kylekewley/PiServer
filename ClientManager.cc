@@ -54,12 +54,36 @@ std::vector<char> ClientManager::receivedMessageOnPort(const char *message, int 
 	if (status.header.messagelength() - status.message.size() <= 0) {
 		//Parse it and clear
 		status.messageStatus = MessageStatusNone;
-        response = PiParser::getInstance().parseData(status.header, status.message);
+        std::vector<char> parseResponse = PiParser::getInstance().parseData(status.header, status.message);
+        status.header.set_messagelength(static_cast<uint32_t>(parseResponse.size()));
+        
+        response = generateMessage(status.header, parseResponse);
+        
 	}
 
 	return response;
 }
 
+std::vector<char> ClientManager::generateMessage(PiHeader &header, std::vector<char> &reply) {
+    int16_t headerLength = header.ByteSize();
+    int prefixBytes = sizeof(headerLength); //Size of the prefix
+    
+    std::vector<char> messageVector;
+    messageVector.resize(prefixBytes+headerLength+reply.size()); //Allocate storage
+    
+    //Copy the header length prefix
+    char *data = &messageVector[0];
+    int16_t networkHeaderLength = htons(headerLength); //Convert for sending on the network
+    memcpy(data, &networkHeaderLength, prefixBytes);
+    
+    //Copy the header
+    header.SerializeToArray(data+prefixBytes, headerLength);
+    
+    //Copy the data
+    messageVector.insert(messageVector.begin()+prefixBytes+headerLength, reply.begin(), reply.end());
+    
+    return messageVector;
+}
 void ClientManager::clientDisconnected(int portNumber) {
 	clientStatus.erase(portNumber);
 }

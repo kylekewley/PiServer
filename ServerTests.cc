@@ -12,7 +12,6 @@ char* binaryParser(char *data, int dataLength, PiHeader header) {
 
 int main(int argc, char **argv) {
     
-    PiParser::getInstance().registerParserForID(new TestParser(), 1, 1);
     PiServer piServer = PiServer(PORT_NUMBER);
 
     return 0;

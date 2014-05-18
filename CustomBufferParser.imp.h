@@ -8,6 +8,8 @@
 
 #ifndef PiServer_CustomBufferParser_imp_h
 #define PiServer_CustomBufferParser_imp_h
+#include <iostream>
+
 #include "CustomBufferParser.h"
 
 using namespace std;
@@ -15,15 +17,15 @@ using namespace std;
 #pragma mark - Parsing
 template <typename T>
 std::vector<char> CustomBufferParser<T>::parse(std::vector<char> data) {
-	inputMessage->ParseFromArray(data.data(), data.size());
+	inputMessage->ParseFromArray(data.data(), static_cast<int>(data.size()));
 	ProtocolBuffer *output = parseBuffer(inputMessage);
     
     //Create a vector the size of output
-    std::vector<char> vector = std::vector<char>(output->ByteSize());
-	output->SerializeToArray(vector.data(), vector.size());
+    vector<char> outputVector = vector<char>(output->ByteSize());
+	output->SerializeToArray(outputVector.data(), static_cast<int>(outputVector.size()));
     
     delete output;
     
-	return vector;
+	return outputVector;
 }
 #endif

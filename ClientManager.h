@@ -55,6 +55,10 @@ public:
 private:
 	std::map<int,ClientStatus> clientStatus;
 
+    /**
+     *Create a char vector containing the header prefix + serialized header + reply
+     */
+    std::vector<char> generateMessage(PiHeader &header, std::vector<char> &reply);
 };
 
 #endif
