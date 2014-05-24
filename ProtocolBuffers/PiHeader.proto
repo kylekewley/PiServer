@@ -1,4 +1,3 @@
-
 message PiHeader {
 	required uint32 messageLength = 1;
 	required uint32 parserID = 2;

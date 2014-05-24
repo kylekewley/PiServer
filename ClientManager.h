@@ -56,6 +56,11 @@ private:
 	std::map<int,ClientStatus> clientStatus;
 
     /**
+     *The key is a group name
+     *The value is a list of socket file descriptors that belong to the group
+     */
+    std::map<std::string, std::vector<int>> groups;
+    /**
      *Create a char vector containing the header prefix + serialized header + reply
      */
     std::vector<char> generateMessage(PiHeader &header, std::vector<char> &reply);
