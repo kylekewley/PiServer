@@ -3,7 +3,7 @@
 #include "TestParser.h"
 #include "CustomBufferParser.h"
 
-#define PORT_NUMBER     10102
+#define PORT_NUMBER     10002
 using namespace std;
 
 char* binaryParser(char *data, int dataLength, PiHeader header) {
