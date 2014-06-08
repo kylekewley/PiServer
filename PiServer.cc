@@ -221,5 +221,4 @@ void * PiServer::getInternetAddress(struct sockaddr *sa) {
 
 void PiServer::registerDefaultParsers() {
     PiParser::getInstance().registerParserForID(new PingParser(), kPingParserID, kPingParserID);
-    PiParser::getInstance().registerParserForID(new TestParser(), kTestParserID, kTestParserID);
 }

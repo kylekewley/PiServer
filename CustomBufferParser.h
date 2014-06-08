@@ -13,7 +13,7 @@ public:
 	CustomBufferParser(): inputMessage(new T()) {
         static_assert(std::is_base_of<ProtocolBuffer, T>::value, "T not derived from google::protocol::MessageLite");
     };
-	std::vector<char> parse(std::vector<char> data);
+	PiMessage parse(std::vector<char> data, unsigned long messageID);
     
     /**
      *Parse the MessageLite object and return another MessageLite 

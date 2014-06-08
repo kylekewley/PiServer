@@ -28,7 +28,13 @@ PiMessage::PiMessage(unsigned long parserID, ProtocolBuffer &pBuffer) {
 
 PiMessage::PiMessage(PiHeader &header, vector<char> &message): messageHeader(header), messageData(message) {}
 
+PiMessage::PiMessage(unsigned long parserID) {
+    messageHeader = generateHeader(parserID, 0);
+}
 
+PiMessage::PiMessage(unsigned long parserID, unsigned long messageID) {
+    messageHeader = generateHeader(parserID, kHeaderConfirmation, messageID, 0);
+}
 
 #pragma mark - Public Methods
 #pragma mark Setting flag values

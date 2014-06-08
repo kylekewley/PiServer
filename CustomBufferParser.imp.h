@@ -16,16 +16,15 @@ using namespace std;
 
 #pragma mark - Parsing
 template <typename T>
-std::vector<char> CustomBufferParser<T>::parse(std::vector<char> data) {
+PiMessage CustomBufferParser<T>::parse(std::vector<char> data, unsigned long messageID) {
 	inputMessage->ParseFromArray(data.data(), static_cast<int>(data.size()));
-	ProtocolBuffer *output = parseBuffer(inputMessage);
+	ProtocolBuffer *outputBuffer = parseBuffer(inputMessage);
     
-    //Create a vector the size of output
-    vector<char> outputVector = vector<char>(output->ByteSize());
-	output->SerializeToArray(outputVector.data(), static_cast<int>(outputVector.size()));
+    PiMessage output = PiMessage(0, *outputBuffer);
     
-    delete output;
+    output.messageHeader.set_messageid(messageID);
+    output.setFlagTrue(kHeaderConfirmation);
     
-	return outputVector;
+    return output;
 }
 #endif

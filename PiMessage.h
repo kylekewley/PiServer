@@ -16,11 +16,6 @@
 
 using namespace std;
 
-class PiMessageCallback {
-public:
-    virtual void messageReceivedByServer(PiHeader &header) = 0;
-    virtual void serverErrorParsingMessage(PiHeader &header, kErrorCode errorNumber) = 0;
-};
 
 class PiMessage {
 public:
@@ -36,6 +31,21 @@ public:
      *@param    pBuffer     The generated Protocol Buffer object to send to the server
      */
     PiMessage(unsigned long parserID, ProtocolBuffer &pBuffer);
+    
+    /**
+     *Constructor for when we just want to send a reply header with no data
+     *
+     *@param    parserID    The PiClient parserID setup to parse the header response
+     */
+    PiMessage(unsigned long parserID);
+    
+    /**
+     *Constructor for sending a PiMessage reply with a header and no data. This will have the kHeaderConfirmation flag set
+     *
+     *@param    parserID    The PiClient parserID setup to parse the header response
+     *@param    messageID   The ID of the message to send back to the client
+     */
+    PiMessage(unsigned long parserID, unsigned long messageID);
     
     /**
      *@param    header  The PiHeader to use for the message
@@ -92,9 +102,8 @@ public:
      */
     long serializedSize();
     
-    
-    PiMessageCallback *messageDelegate;
-    
+    PiHeader messageHeader;
+
 private:
     /**
      *@abstract Create a new PiHeader object with the given values
@@ -117,7 +126,6 @@ private:
      */
     vector<char> serializeMessageToVector(ProtocolBuffer &message);
     
-    PiHeader messageHeader;
     
     vector<char> headerData;
     vector<char> messageData;

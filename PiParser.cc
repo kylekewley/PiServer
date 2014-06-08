@@ -30,15 +30,17 @@ bool PiParser::parserRangeValid(CustomParserWrapper &wrapper) {
 	return _parserSet.find(wrapper) == _parserSet.end();
 }
 
-std::vector<char> PiParser::parseData(PiHeader &header, std::vector<char> data) {
+PiMessage PiParser::parseData(PiHeader &header, std::vector<char> data) {
 	CustomParserWrapper dummyWrapper = CustomParserWrapper(header.parserid());
 	auto iterator = _parserSet.find(dummyWrapper);
 	if (iterator == _parserSet.end()) {
-		return std::vector<char>(); //No response
+		return PiMessage(kParserNotFoundID, header.messageid()); //No response
 	}
     CustomParserWrapper wrapper = *iterator;
-	std::vector<char> response = wrapper.parser->parse(data);
-
-	return response;
+	
+    PiMessage outputMessage = wrapper.parser->parse(data, header.messageid());
+    
+    return outputMessage;
+    
 }
 

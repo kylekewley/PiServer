@@ -3,8 +3,12 @@
 
 #include <google/protobuf/message.h>
 
-const int kPingParserID = 0;
-const int kTestParserID = 1;
+typedef enum {
+    kEmptyParserID      = 0,
+    kPingParserID       = 1,
+    kParserNotFoundID   = 2,
+    kParseErrorID       = 3
+}kDefaultParserID;
 
 
 typedef ::google::protobuf::MessageLite ProtocolBuffer;
