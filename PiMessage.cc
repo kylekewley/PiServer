@@ -14,26 +14,29 @@ static unsigned long uniqueMessageID = ULONG_MAX;
 
 #pragma mark - Constructors
 
-PiMessage::PiMessage(unsigned long parserID, vector<char> &message) {
+PiMessage::PiMessage(): isEmpty(true) {
+}
+
+PiMessage::PiMessage(unsigned long parserID, vector<char> &message): isEmpty(false) {
     messageHeader = generateHeader(parserID, message.size());
     messageData = message;
 }
 
-PiMessage::PiMessage(unsigned long parserID, ProtocolBuffer &pBuffer) {
+PiMessage::PiMessage(unsigned long parserID, ProtocolBuffer &pBuffer): isEmpty(false) {
     messageHeader = generateHeader(parserID, pBuffer.ByteSize());
     
     messageData = serializeMessageToVector(pBuffer);
 
 }
 
-PiMessage::PiMessage(PiHeader &header, vector<char> &message): messageHeader(header), messageData(message) {}
+PiMessage::PiMessage(PiHeader &header, vector<char> &message): isEmpty(false), messageHeader(header), messageData(message) {}
 
-PiMessage::PiMessage(unsigned long parserID) {
+PiMessage::PiMessage(unsigned long parserID): isEmpty(false) {
     messageHeader = generateHeader(parserID, 0);
 }
 
-PiMessage::PiMessage(unsigned long parserID, unsigned long messageID) {
-    messageHeader = generateHeader(parserID, kHeaderConfirmation, messageID, 0);
+PiMessage::PiMessage(unsigned long parserID, unsigned long messageID): isEmpty(false) {
+    messageHeader = generateHeader(parserID, 0, messageID, 0);
 }
 
 #pragma mark - Public Methods
@@ -58,6 +61,9 @@ bool PiMessage::getFlagValue(kPiHeaderFlag flag) {
 
 #pragma mark Writing to the buffer
 long PiMessage::writeToBuffer(void *buffer, long length) {
+    if (isEmpty)
+        return 0;
+    
     if (headerData.size() == 0) {
         headerData = serializeMessageToVector(messageHeader);
     }
@@ -66,33 +72,28 @@ long PiMessage::writeToBuffer(void *buffer, long length) {
     
     if (totalBytesSent < headerData.size()) {
         //Still need to copy the header
-        long copyLength = spaceRemaining;
         long headerRemaining = headerData.size() - totalBytesSent;
         
-        if (spaceRemaining >= headerRemaining)
-            copyLength = headerRemaining;
+        unsigned long copyLength = copyDataToBuffer(headerData.data()+totalBytesSent, buffer, headerRemaining, spaceRemaining);
         
-        //Start copying at the proper offset
-        memcpy(buffer, headerData.data(), copyLength);
         
         totalBytesSent += copyLength;
         spaceRemaining -= copyLength;
+        //Move the buffer pointer so our next copy to it is at the correct position
+        buffer = static_cast<char *>(buffer)+copyLength;
     }
     
     if (totalBytesSent >= headerData.size()) {
         //Start sending the actual message
-        long copyLength = spaceRemaining;
         long messageRemaining = messageData.size() + headerData.size() - totalBytesSent;
-        
-        if (spaceRemaining >= messageRemaining)
-            copyLength = messageRemaining;
-        
         long messageOffset = totalBytesSent - headerData.size();
+
+        unsigned long copyLength = copyDataToBuffer(messageData.data()+messageOffset, buffer, messageRemaining, spaceRemaining);
         
-        memcpy(static_cast<void *>(static_cast<char *>(buffer)+(spaceRemaining-length)), messageData.data()+messageOffset, copyLength);
         
         totalBytesSent += copyLength;
         spaceRemaining -= copyLength;
+        buffer = static_cast<char *>(buffer)+copyLength;
     }
     
     return length-spaceRemaining;
@@ -102,6 +103,11 @@ long PiMessage::bytesRemaining() {
     return serializedSize() - totalBytesSent;
 }
 
+void PiMessage::moveWritePointerBack(unsigned long bytes) {
+    totalBytesSent -= bytes;
+    if (totalBytesSent < 0)
+        totalBytesSent = 0;
+}
 
 void PiMessage::resetWrite() {
     totalBytesSent = 0;
@@ -110,6 +116,9 @@ void PiMessage::resetWrite() {
 }
 
 long PiMessage::serializedSize() {
+    if (isEmpty)
+        return 0;
+    
     return messageHeader.ByteSize() + messageData.size() + sizeof(prefix_t);
 }
 
@@ -131,10 +140,36 @@ PiHeader PiMessage::generateHeader(unsigned long parserID, unsigned long message
     return generateHeader(parserID, 0, --uniqueMessageID, messageLength);
 }
 
+vector<char> serializedVectorFromHeader(PiHeader &header) {
+    vector<char> headerVector = vector<char>(header.ByteSize()+sizeof(prefix_t));
+    
+    char *vectorPtr = headerVector.data();
+    
+    prefix_t headerLength = header.ByteSize();
+    headerLength = hpton(headerLength);
+    
+    memcpy(vectorPtr, &headerLength, sizeof(headerLength));
+    vectorPtr += sizeof(headerLength);
+    
+    header.SerializeToArray(vectorPtr, header.ByteSize());
+    
+    return headerVector;
+}
 
 vector<char> PiMessage::serializeMessageToVector(ProtocolBuffer &message) {
     vector<char> tmp = vector<char>(message.ByteSize());
 	message.SerializeToArray(tmp.data(), static_cast<int>(tmp.size()));
     
     return tmp;
+}
+
+unsigned long PiMessage::copyDataToBuffer(const void *data, void *buffer, unsigned long dataLength, unsigned long bufferLength) {
+    unsigned long maxCopy = dataLength;
+    
+    if (dataLength > bufferLength)
+        maxCopy = bufferLength; //Prevent overflow
+    
+    memcpy(buffer, data, maxCopy);
+    
+    return maxCopy;
 }

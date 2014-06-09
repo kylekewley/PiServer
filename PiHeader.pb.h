@@ -117,6 +117,13 @@ class PiHeader : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 flags() const;
   inline void set_flags(::google::protobuf::uint32 value);
 
+  // optional bool successResponse = 5;
+  inline bool has_successresponse() const;
+  inline void clear_successresponse();
+  static const int kSuccessResponseFieldNumber = 5;
+  inline bool successresponse() const;
+  inline void set_successresponse(bool value);
+
   // @@protoc_insertion_point(class_scope:PiHeader)
  private:
   inline void set_has_messagelength();
@@ -127,6 +134,8 @@ class PiHeader : public ::google::protobuf::Message {
   inline void clear_has_messageid();
   inline void set_has_flags();
   inline void clear_has_flags();
+  inline void set_has_successresponse();
+  inline void clear_has_successresponse();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -134,9 +143,10 @@ class PiHeader : public ::google::protobuf::Message {
   ::google::protobuf::uint32 parserid_;
   ::google::protobuf::uint32 messageid_;
   ::google::protobuf::uint32 flags_;
+  bool successresponse_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
 
   friend void  protobuf_AddDesc_PiHeader_2eproto();
   friend void protobuf_AssignDesc_PiHeader_2eproto();
@@ -238,6 +248,28 @@ inline ::google::protobuf::uint32 PiHeader::flags() const {
 inline void PiHeader::set_flags(::google::protobuf::uint32 value) {
   set_has_flags();
   flags_ = value;
+}
+
+// optional bool successResponse = 5;
+inline bool PiHeader::has_successresponse() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void PiHeader::set_has_successresponse() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void PiHeader::clear_has_successresponse() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void PiHeader::clear_successresponse() {
+  successresponse_ = false;
+  clear_has_successresponse();
+}
+inline bool PiHeader::successresponse() const {
+  return successresponse_;
+}
+inline void PiHeader::set_successresponse(bool value) {
+  set_has_successresponse();
+  successresponse_ = value;
 }
 
 

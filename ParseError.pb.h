@@ -89,24 +89,17 @@ class ParseError : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required uint32 receivedMessageID = 1;
-  inline bool has_receivedmessageid() const;
-  inline void clear_receivedmessageid();
-  static const int kReceivedMessageIDFieldNumber = 1;
-  inline ::google::protobuf::uint32 receivedmessageid() const;
-  inline void set_receivedmessageid(::google::protobuf::uint32 value);
-
-  // optional uint32 errorNumber = 2;
+  // optional uint32 errorNumber = 1;
   inline bool has_errornumber() const;
   inline void clear_errornumber();
-  static const int kErrorNumberFieldNumber = 2;
+  static const int kErrorNumberFieldNumber = 1;
   inline ::google::protobuf::uint32 errornumber() const;
   inline void set_errornumber(::google::protobuf::uint32 value);
 
-  // optional string errorMessage = 3;
+  // optional string errorMessage = 2;
   inline bool has_errormessage() const;
   inline void clear_errormessage();
-  static const int kErrorMessageFieldNumber = 3;
+  static const int kErrorMessageFieldNumber = 2;
   inline const ::std::string& errormessage() const;
   inline void set_errormessage(const ::std::string& value);
   inline void set_errormessage(const char* value);
@@ -117,8 +110,6 @@ class ParseError : public ::google::protobuf::Message {
 
   // @@protoc_insertion_point(class_scope:ParseError)
  private:
-  inline void set_has_receivedmessageid();
-  inline void clear_has_receivedmessageid();
   inline void set_has_errornumber();
   inline void clear_has_errornumber();
   inline void set_has_errormessage();
@@ -126,12 +117,11 @@ class ParseError : public ::google::protobuf::Message {
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::google::protobuf::uint32 receivedmessageid_;
-  ::google::protobuf::uint32 errornumber_;
   ::std::string* errormessage_;
+  ::google::protobuf::uint32 errornumber_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
 
   friend void  protobuf_AddDesc_ParseError_2eproto();
   friend void protobuf_AssignDesc_ParseError_2eproto();
@@ -147,37 +137,15 @@ class ParseError : public ::google::protobuf::Message {
 
 // ParseError
 
-// required uint32 receivedMessageID = 1;
-inline bool ParseError::has_receivedmessageid() const {
+// optional uint32 errorNumber = 1;
+inline bool ParseError::has_errornumber() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void ParseError::set_has_receivedmessageid() {
+inline void ParseError::set_has_errornumber() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void ParseError::clear_has_receivedmessageid() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void ParseError::clear_receivedmessageid() {
-  receivedmessageid_ = 0u;
-  clear_has_receivedmessageid();
-}
-inline ::google::protobuf::uint32 ParseError::receivedmessageid() const {
-  return receivedmessageid_;
-}
-inline void ParseError::set_receivedmessageid(::google::protobuf::uint32 value) {
-  set_has_receivedmessageid();
-  receivedmessageid_ = value;
-}
-
-// optional uint32 errorNumber = 2;
-inline bool ParseError::has_errornumber() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void ParseError::set_has_errornumber() {
-  _has_bits_[0] |= 0x00000002u;
-}
 inline void ParseError::clear_has_errornumber() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000001u;
 }
 inline void ParseError::clear_errornumber() {
   errornumber_ = 0u;
@@ -191,15 +159,15 @@ inline void ParseError::set_errornumber(::google::protobuf::uint32 value) {
   errornumber_ = value;
 }
 
-// optional string errorMessage = 3;
+// optional string errorMessage = 2;
 inline bool ParseError::has_errormessage() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000002u) != 0;
 }
 inline void ParseError::set_has_errormessage() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000002u;
 }
 inline void ParseError::clear_has_errormessage() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void ParseError::clear_errormessage() {
   if (errormessage_ != &::google::protobuf::internal::kEmptyString) {

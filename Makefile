@@ -1,4 +1,4 @@
-SOURCES := ServerTests.cc  PiServer.cc PiParser.cc PiMessage.cc PiHeader.pb.cc TestMessage.pb.cc Ping.pb.cc ParseError.pb.cc ClientRegistration.pb.cc NoParserFound.pb.cc GroupRegistration.pb.cc TestParser.cc PingParser.cc ClientManager.cc
+SOURCES := ServerTests.cc  PiServer.cc PiParser.cc PiMessage.cc PiErrorMessage.cc PiHeader.pb.cc TestMessage.pb.cc Ping.pb.cc ParseError.pb.cc  GroupRegistration.pb.cc TestParser.cc PingParser.cc ClientManager.cc
 OBJS = $(SOURCES:%.cc=%.o)
 
 CFLAGS := -std=c++11 -pthread 

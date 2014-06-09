@@ -17,7 +17,7 @@ void ClientManager::newClientConnection(int portNumber) {
 	clientStatus[portNumber] = newStatus;
 }
 
-std::vector<char> ClientManager::receivedMessageOnPort(const char *message, int messageLength, int portNumber) {
+PiMessage ClientManager::receivedMessageOnPort(const char *message, int messageLength, int portNumber) {
 	if (!clientStatus.count(portNumber)) {
 		newClientConnection(portNumber);
 	}
@@ -46,7 +46,7 @@ std::vector<char> ClientManager::receivedMessageOnPort(const char *message, int 
 		status.message.insert(status.message.end(), message, message+messageLength);
 	}
 
-	std::vector<char> response = std::vector<char>();
+	PiMessage response;
     
     cout << "Message on port: " << to_string(portNumber) << " total size: " << to_string(status.header.messagelength()) << " received size: " << status.message.size() << endl;
 
@@ -54,36 +54,13 @@ std::vector<char> ClientManager::receivedMessageOnPort(const char *message, int 
 	if (status.header.messagelength() - status.message.size() <= 0) {
 		//Parse it and clear
 		status.messageStatus = MessageStatusNone;
-        std::vector<char> parseResponse = PiParser::getInstance().parseData(status.header, status.message);
-        status.header.set_messagelength(static_cast<uint32_t>(parseResponse.size()));
         
-        response = generateMessage(status.header, parseResponse);
-        
+        response = PiParser::getInstance().parseData(status.header, status.message);
 	}
 
 	return response;
 }
 
-std::vector<char> ClientManager::generateMessage(PiHeader &header, std::vector<char> &reply) {
-    int16_t headerLength = header.ByteSize();
-    int prefixBytes = sizeof(headerLength); //Size of the prefix
-    
-    std::vector<char> messageVector;
-    messageVector.resize(prefixBytes+headerLength+reply.size()); //Allocate storage
-    
-    //Copy the header length prefix
-    char *data = &messageVector[0];
-    int16_t networkHeaderLength = htons(headerLength); //Convert for sending on the network
-    memcpy(data, &networkHeaderLength, prefixBytes);
-    
-    //Copy the header
-    header.SerializeToArray(data+prefixBytes, headerLength);
-    
-    //Copy the data
-    messageVector.insert(messageVector.begin()+prefixBytes+headerLength, reply.begin(), reply.end());
-    
-    return messageVector;
-}
 void ClientManager::clientDisconnected(int portNumber) {
 	clientStatus.erase(portNumber);
 }

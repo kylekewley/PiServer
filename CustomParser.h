@@ -1,12 +1,13 @@
 #ifndef Custom_Parser_h
 #define Custom_Parser_h
 
-#include "PiMessage.h"
+#include "PiErrorMessage.h"
+#include "Constants.h"
 
 class CustomParser {
 public:
 	CustomParser() {};
-	virtual PiMessage parse(std::vector<char> data, unsigned long messageID) {return PiMessage(kParserNotFoundID, messageID); };
+	virtual PiMessage parse(std::vector<char> data) {return PiErrorMessage(kUnimplementedParser); };
 };
 
 #endif

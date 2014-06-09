@@ -1,0 +1,6 @@
+message GroupRegistration {
+	required string groupID = 1; //The group to add/remove from 
+	required bool addToGroup = 2; //True means add to group, False means remove from group
+	optional uint32 flags = 3; //Can be used to determine what priority message gets sent to us
+	optional string clientName = 4; //Can be used to identify the client
+}

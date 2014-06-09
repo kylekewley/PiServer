@@ -1,8 +1,9 @@
 #ifndef Test_Parser_h
 #define Test_Parser_h
 
-#include "Constants.h"
 #include "CustomBufferParser.imp.h"
+#include "Constants.h"
+
 class TestMessage;
 
 class TestParser : public CustomBufferParser<TestMessage> {

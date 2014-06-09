@@ -1,8 +1,8 @@
 #ifndef Custom_Parser_Wrapper_h
 #define Custom_Parser_Wrapper_h
 
-#include "Constants.h"
 #include "CustomParser.h"
+#include "Constants.h"
 
 class CustomParserWrapper {
 public:

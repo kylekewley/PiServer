@@ -11,20 +11,20 @@
 #include <iostream>
 
 #include "CustomBufferParser.h"
+#include "Constants.h"
 
 using namespace std;
 
 #pragma mark - Parsing
 template <typename T>
-PiMessage CustomBufferParser<T>::parse(std::vector<char> data, unsigned long messageID) {
+PiMessage CustomBufferParser<T>::parse(std::vector<char> data) {
 	inputMessage->ParseFromArray(data.data(), static_cast<int>(data.size()));
-	ProtocolBuffer *outputBuffer = parseBuffer(inputMessage);
+	
+    //Call the subclass's implementation of parseBuffer
+    ProtocolBuffer *outputBuffer = parseBuffer(inputMessage);
     
-    PiMessage output = PiMessage(0, *outputBuffer);
-    
-    output.messageHeader.set_messageid(messageID);
-    output.setFlagTrue(kHeaderConfirmation);
-    
-    return output;
+    //Return a new PiMessage with a parserID of 0 and the returned outputBuffer
+    return PiMessage(0, *outputBuffer);
+
 }
 #endif

@@ -32,8 +32,7 @@ void protobuf_AssignDesc_ParseError_2eproto() {
       "ParseError.proto");
   GOOGLE_CHECK(file != NULL);
   ParseError_descriptor_ = file->message_type(0);
-  static const int ParseError_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ParseError, receivedmessageid_),
+  static const int ParseError_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ParseError, errornumber_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ParseError, errormessage_),
   };
@@ -78,9 +77,8 @@ void protobuf_AddDesc_ParseError_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\020ParseError.proto\"R\n\nParseError\022\031\n\021rece"
-    "ivedMessageID\030\001 \002(\r\022\023\n\013errorNumber\030\002 \001(\r"
-    "\022\024\n\014errorMessage\030\003 \001(\t", 102);
+    "\n\020ParseError.proto\"7\n\nParseError\022\023\n\013erro"
+    "rNumber\030\001 \001(\r\022\024\n\014errorMessage\030\002 \001(\t", 75);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ParseError.proto", &protobuf_RegisterTypes);
   ParseError::default_instance_ = new ParseError();
@@ -98,7 +96,6 @@ struct StaticDescriptorInitializer_ParseError_2eproto {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int ParseError::kReceivedMessageIDFieldNumber;
 const int ParseError::kErrorNumberFieldNumber;
 const int ParseError::kErrorMessageFieldNumber;
 #endif  // !_MSC_VER
@@ -119,7 +116,6 @@ ParseError::ParseError(const ParseError& from)
 
 void ParseError::SharedCtor() {
   _cached_size_ = 0;
-  receivedmessageid_ = 0u;
   errornumber_ = 0u;
   errormessage_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -160,7 +156,6 @@ ParseError* ParseError::New() const {
 
 void ParseError::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    receivedmessageid_ = 0u;
     errornumber_ = 0u;
     if (has_errormessage()) {
       if (errormessage_ != &::google::protobuf::internal::kEmptyString) {
@@ -178,26 +173,10 @@ bool ParseError::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required uint32 receivedMessageID = 1;
+      // optional uint32 errorNumber = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 input, &receivedmessageid_)));
-          set_has_receivedmessageid();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(16)) goto parse_errorNumber;
-        break;
-      }
-
-      // optional uint32 errorNumber = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_errorNumber:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &errornumber_)));
@@ -205,12 +184,12 @@ bool ParseError::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_errorMessage;
+        if (input->ExpectTag(18)) goto parse_errorMessage;
         break;
       }
 
-      // optional string errorMessage = 3;
-      case 3: {
+      // optional string errorMessage = 2;
+      case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_errorMessage:
@@ -244,23 +223,18 @@ bool ParseError::MergePartialFromCodedStream(
 
 void ParseError::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required uint32 receivedMessageID = 1;
-  if (has_receivedmessageid()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->receivedmessageid(), output);
-  }
-
-  // optional uint32 errorNumber = 2;
+  // optional uint32 errorNumber = 1;
   if (has_errornumber()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->errornumber(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->errornumber(), output);
   }
 
-  // optional string errorMessage = 3;
+  // optional string errorMessage = 2;
   if (has_errormessage()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->errormessage().data(), this->errormessage().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      3, this->errormessage(), output);
+      2, this->errormessage(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -271,24 +245,19 @@ void ParseError::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* ParseError::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required uint32 receivedMessageID = 1;
-  if (has_receivedmessageid()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->receivedmessageid(), target);
-  }
-
-  // optional uint32 errorNumber = 2;
+  // optional uint32 errorNumber = 1;
   if (has_errornumber()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->errornumber(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->errornumber(), target);
   }
 
-  // optional string errorMessage = 3;
+  // optional string errorMessage = 2;
   if (has_errormessage()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->errormessage().data(), this->errormessage().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->errormessage(), target);
+        2, this->errormessage(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -302,21 +271,14 @@ int ParseError::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required uint32 receivedMessageID = 1;
-    if (has_receivedmessageid()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt32Size(
-          this->receivedmessageid());
-    }
-
-    // optional uint32 errorNumber = 2;
+    // optional uint32 errorNumber = 1;
     if (has_errornumber()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->errornumber());
     }
 
-    // optional string errorMessage = 3;
+    // optional string errorMessage = 2;
     if (has_errormessage()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -350,9 +312,6 @@ void ParseError::MergeFrom(const ::google::protobuf::Message& from) {
 void ParseError::MergeFrom(const ParseError& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_receivedmessageid()) {
-      set_receivedmessageid(from.receivedmessageid());
-    }
     if (from.has_errornumber()) {
       set_errornumber(from.errornumber());
     }
@@ -376,14 +335,12 @@ void ParseError::CopyFrom(const ParseError& from) {
 }
 
 bool ParseError::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
   return true;
 }
 
 void ParseError::Swap(ParseError* other) {
   if (other != this) {
-    std::swap(receivedmessageid_, other->receivedmessageid_);
     std::swap(errornumber_, other->errornumber_);
     std::swap(errormessage_, other->errormessage_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

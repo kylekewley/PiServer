@@ -4,6 +4,8 @@
 #include <iostream>
 #include "ClientManager.h"
 
+#include "PiMessage.h"
+
 using namespace std;
 
 class PiServer {
@@ -22,7 +24,7 @@ private:
     /**
      *The messageQueue holds outgoing messages based on each connection's socketfd
      */
-    map<int, vector<char>> messageQueue;
+    map<int, vector<PiMessage>> messageQueue;
     /**
     *Manages the status of client connections and messages
     */

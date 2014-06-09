@@ -115,6 +115,18 @@ class GroupRegistration : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 flags() const;
   inline void set_flags(::google::protobuf::uint32 value);
 
+  // optional string clientName = 4;
+  inline bool has_clientname() const;
+  inline void clear_clientname();
+  static const int kClientNameFieldNumber = 4;
+  inline const ::std::string& clientname() const;
+  inline void set_clientname(const ::std::string& value);
+  inline void set_clientname(const char* value);
+  inline void set_clientname(const char* value, size_t size);
+  inline ::std::string* mutable_clientname();
+  inline ::std::string* release_clientname();
+  inline void set_allocated_clientname(::std::string* clientname);
+
   // @@protoc_insertion_point(class_scope:GroupRegistration)
  private:
   inline void set_has_groupid();
@@ -123,15 +135,18 @@ class GroupRegistration : public ::google::protobuf::Message {
   inline void clear_has_addtogroup();
   inline void set_has_flags();
   inline void clear_has_flags();
+  inline void set_has_clientname();
+  inline void clear_has_clientname();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* groupid_;
   bool addtogroup_;
   ::google::protobuf::uint32 flags_;
+  ::std::string* clientname_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
 
   friend void  protobuf_AddDesc_GroupRegistration_2eproto();
   friend void protobuf_AssignDesc_GroupRegistration_2eproto();
@@ -259,6 +274,76 @@ inline ::google::protobuf::uint32 GroupRegistration::flags() const {
 inline void GroupRegistration::set_flags(::google::protobuf::uint32 value) {
   set_has_flags();
   flags_ = value;
+}
+
+// optional string clientName = 4;
+inline bool GroupRegistration::has_clientname() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void GroupRegistration::set_has_clientname() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void GroupRegistration::clear_has_clientname() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void GroupRegistration::clear_clientname() {
+  if (clientname_ != &::google::protobuf::internal::kEmptyString) {
+    clientname_->clear();
+  }
+  clear_has_clientname();
+}
+inline const ::std::string& GroupRegistration::clientname() const {
+  return *clientname_;
+}
+inline void GroupRegistration::set_clientname(const ::std::string& value) {
+  set_has_clientname();
+  if (clientname_ == &::google::protobuf::internal::kEmptyString) {
+    clientname_ = new ::std::string;
+  }
+  clientname_->assign(value);
+}
+inline void GroupRegistration::set_clientname(const char* value) {
+  set_has_clientname();
+  if (clientname_ == &::google::protobuf::internal::kEmptyString) {
+    clientname_ = new ::std::string;
+  }
+  clientname_->assign(value);
+}
+inline void GroupRegistration::set_clientname(const char* value, size_t size) {
+  set_has_clientname();
+  if (clientname_ == &::google::protobuf::internal::kEmptyString) {
+    clientname_ = new ::std::string;
+  }
+  clientname_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* GroupRegistration::mutable_clientname() {
+  set_has_clientname();
+  if (clientname_ == &::google::protobuf::internal::kEmptyString) {
+    clientname_ = new ::std::string;
+  }
+  return clientname_;
+}
+inline ::std::string* GroupRegistration::release_clientname() {
+  clear_has_clientname();
+  if (clientname_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = clientname_;
+    clientname_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void GroupRegistration::set_allocated_clientname(::std::string* clientname) {
+  if (clientname_ != &::google::protobuf::internal::kEmptyString) {
+    delete clientname_;
+  }
+  if (clientname) {
+    set_has_clientname();
+    clientname_ = clientname;
+  } else {
+    clear_has_clientname();
+    clientname_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
 }
 
 

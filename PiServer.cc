@@ -22,7 +22,7 @@
 *Refused error.
 */
 static const int kClientBacklog = 10;
-static const int kBufferSize = 8192;
+static const int kBufferSize = 16384; //16kb
 
 using namespace std;
 
@@ -160,19 +160,27 @@ void PiServer::listenForClients(int serverfd) {
                         FD_CLR(sockfd, &masterfds);
 					}else {
 						//Read the message
-						vector<char> response = _clientManager.receivedMessageOnPort(buffer, length, sockfd);
-                        messageQueue[sockfd].insert(messageQueue[sockfd].end(), response.begin(), response.end());
+						PiMessage response = _clientManager.receivedMessageOnPort(buffer, length, sockfd);
+                        messageQueue[sockfd].push_back(response);
 					}
 				}
 			}
             if (FD_ISSET(sockfd, &masterfds) && sockfd != serverfd) {
                 //See if we have a message to send
-                vector<char> &toSend = messageQueue[sockfd];
+                vector<PiMessage> &toSend = messageQueue[sockfd];
                 if (toSend.size() != 0) {
-                    size_t sentLength = send(sockfd, toSend.data(), toSend.size(), MSG_DONTWAIT);
-                    if (sentLength > 0) {
-                        //Didn't get an error
-                        toSend.erase(toSend.begin(), toSend.begin()+sentLength);
+                    PiMessage &currentMessage = toSend[0];
+                    
+                    long writtenLength = currentMessage.writeToBuffer(buffer, sizeof(buffer));
+
+                    size_t sentLength = send(sockfd, buffer, writtenLength, MSG_DONTWAIT);
+                    
+                    if (sentLength < writtenLength) {
+                        //Move the pointer on the currentMessage back
+                        currentMessage.moveWritePointerBack(writtenLength-sentLength);
+                    }else if (currentMessage.bytesRemaining() == 0) {
+                        //Remove the first message
+                        toSend.erase(toSend.begin(), toSend.begin()+1);
                     }
                 }
             }
@@ -195,7 +203,7 @@ int PiServer::connectToClient(int serverfd, fd_set *masterfds, int *maxfd) {
 		}
         
         //Make sure we have an empty messageQueue for the new client
-        messageQueue[clientfd] = vector<char>();
+        messageQueue[clientfd] = vector<PiMessage>();
    
 		//Print out where we got a connection from
 		char remoteIP[INET6_ADDRSTRLEN];

@@ -21,6 +21,11 @@ class PiMessage {
 public:
     
     /**
+     *Creates an empty PiMessage object that will not send any data
+     */
+    PiMessage();
+    
+    /**
      *@param    parserID    The PiServer parserID setup to parse the data
      *@param    message     binary data to send to the server
      */
@@ -40,7 +45,7 @@ public:
     PiMessage(unsigned long parserID);
     
     /**
-     *Constructor for sending a PiMessage reply with a header and no data. This will have the kHeaderConfirmation flag set
+     *Constructor for sending a PiMessage reply with a header and no data.
      *
      *@param    parserID    The PiClient parserID setup to parse the header response
      *@param    messageID   The ID of the message to send back to the client
@@ -92,6 +97,15 @@ public:
     long bytesRemaining();
     
     /**
+     *Moves the write pointer back a given number of bytes.
+     *
+     *@param    bytes   The number of bytes to move the writePointer backwards
+     *
+     *@discussion   If bytes > totalBytesSent, totalBytesSent will be set to zero.
+     */
+    void moveWritePointerBack(unsigned long bytes);
+    
+    /**
      *The next write call will begin writing from the beginning of the message
      *
      */
@@ -103,6 +117,8 @@ public:
     long serializedSize();
     
     PiHeader messageHeader;
+    
+    bool isEmpty;
 
 private:
     /**
@@ -116,7 +132,15 @@ private:
      *
      */
     PiHeader generateHeader(unsigned long parserID, unsigned long messageLength);
-        
+    
+    /**
+     *Create a new vector object with the PiHeader already written to it
+     *
+     *@param    header  The initialized header to write to the output stream
+     *@return   A vector object ready for the message to be appended to
+     */
+    vector<char> serializedVectorFromHeader(PiHeader &header);
+    
     /**
      *Serialized the Protocol buffer object to the vector
      *
@@ -126,6 +150,17 @@ private:
      */
     vector<char> serializeMessageToVector(ProtocolBuffer &message);
     
+    /**
+     *Copy as much of the data as possible to the given buffer
+     *
+     *@param    data    The data to copy to the buffer
+     *@param    buffer  The buffer where the data will be copied to
+     *@param    dataLength  The length of the data array to copy
+     *@param    bufferLength    The length of the buffer that we are allowed to copy to
+     *
+     *@return   The acutal number of bytes copied to the buffer
+     */
+    unsigned long copyDataToBuffer(const void *data, void *buffer, unsigned long dataLength, unsigned long bufferLength);
     
     vector<char> headerData;
     vector<char> messageData;

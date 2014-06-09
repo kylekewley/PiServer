@@ -18,6 +18,8 @@
 #include <map>
 #include <string>
 #include "PiHeader.pb.h"
+#include "PiMessage.h"
+
 typedef enum MessageStatus
 {
 	MessageStatusNone, 		//Waiting for a message
@@ -45,7 +47,7 @@ public:
 	*or handing the complete message off to the PiParser. The PiParser returns
 	*a response that the ClientManager sends back to the PiServer.
 	*/
-    std::vector<char> receivedMessageOnPort(const char *message, int messageLength, int portNumber);
+    PiMessage receivedMessageOnPort(const char *message, int messageLength, int portNumber);
 
 	/**
 	*destroys the ClientStatus object associated with the port

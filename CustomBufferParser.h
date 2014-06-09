@@ -1,8 +1,8 @@
 #ifndef Custom_Buffer_Parser_h
 #define Custom_Buffer_Parser_h
 
-#include "Constants.h"
 #include "CustomParser.h"
+#include "Constants.h"
 
 
 template <typename T> class CustomBufferParser : public CustomParser {
@@ -13,7 +13,7 @@ public:
 	CustomBufferParser(): inputMessage(new T()) {
         static_assert(std::is_base_of<ProtocolBuffer, T>::value, "T not derived from google::protocol::MessageLite");
     };
-	PiMessage parse(std::vector<char> data, unsigned long messageID);
+	PiMessage parse(std::vector<char> data);
     
     /**
      *Parse the MessageLite object and return another MessageLite 

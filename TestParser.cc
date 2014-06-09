@@ -2,6 +2,7 @@
 #include "TestMessage.pb.h"
 #include <iostream>
 
+
 using namespace std;
 //Pass in the type of protocol buffer to parse with
 TestParser::TestParser() {

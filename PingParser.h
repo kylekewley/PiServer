@@ -9,7 +9,6 @@
 #ifndef __PiServer__PingParser__
 #define __PiServer__PingParser__
 
-#include "Constants.h"
 #include "CustomBufferParser.imp.h"
 
 class Ping;

@@ -32,10 +32,11 @@ void protobuf_AssignDesc_GroupRegistration_2eproto() {
       "GroupRegistration.proto");
   GOOGLE_CHECK(file != NULL);
   GroupRegistration_descriptor_ = file->message_type(0);
-  static const int GroupRegistration_offsets_[3] = {
+  static const int GroupRegistration_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GroupRegistration, groupid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GroupRegistration, addtogroup_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GroupRegistration, flags_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GroupRegistration, clientname_),
   };
   GroupRegistration_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -78,9 +79,9 @@ void protobuf_AddDesc_GroupRegistration_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\027GroupRegistration.proto\"G\n\021GroupRegist"
+    "\n\027GroupRegistration.proto\"[\n\021GroupRegist"
     "ration\022\017\n\007groupID\030\001 \002(\t\022\022\n\naddToGroup\030\002 "
-    "\002(\010\022\r\n\005flags\030\003 \001(\r", 98);
+    "\002(\010\022\r\n\005flags\030\003 \001(\r\022\022\n\nclientName\030\004 \001(\t", 118);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "GroupRegistration.proto", &protobuf_RegisterTypes);
   GroupRegistration::default_instance_ = new GroupRegistration();
@@ -101,6 +102,7 @@ struct StaticDescriptorInitializer_GroupRegistration_2eproto {
 const int GroupRegistration::kGroupIDFieldNumber;
 const int GroupRegistration::kAddToGroupFieldNumber;
 const int GroupRegistration::kFlagsFieldNumber;
+const int GroupRegistration::kClientNameFieldNumber;
 #endif  // !_MSC_VER
 
 GroupRegistration::GroupRegistration()
@@ -122,6 +124,7 @@ void GroupRegistration::SharedCtor() {
   groupid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   addtogroup_ = false;
   flags_ = 0u;
+  clientname_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -132,6 +135,9 @@ GroupRegistration::~GroupRegistration() {
 void GroupRegistration::SharedDtor() {
   if (groupid_ != &::google::protobuf::internal::kEmptyString) {
     delete groupid_;
+  }
+  if (clientname_ != &::google::protobuf::internal::kEmptyString) {
+    delete clientname_;
   }
   if (this != default_instance_) {
   }
@@ -167,6 +173,11 @@ void GroupRegistration::Clear() {
     }
     addtogroup_ = false;
     flags_ = 0u;
+    if (has_clientname()) {
+      if (clientname_ != &::google::protobuf::internal::kEmptyString) {
+        clientname_->clear();
+      }
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -222,6 +233,23 @@ bool GroupRegistration::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(34)) goto parse_clientName;
+        break;
+      }
+
+      // optional string clientName = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_clientName:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_clientname()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->clientname().data(), this->clientname().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -263,6 +291,15 @@ void GroupRegistration::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->flags(), output);
   }
 
+  // optional string clientName = 4;
+  if (has_clientname()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->clientname().data(), this->clientname().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      4, this->clientname(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -289,6 +326,16 @@ void GroupRegistration::SerializeWithCachedSizes(
   // optional uint32 flags = 3;
   if (has_flags()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->flags(), target);
+  }
+
+  // optional string clientName = 4;
+  if (has_clientname()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->clientname().data(), this->clientname().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->clientname(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -319,6 +366,13 @@ int GroupRegistration::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->flags());
+    }
+
+    // optional string clientName = 4;
+    if (has_clientname()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->clientname());
     }
 
   }
@@ -357,6 +411,9 @@ void GroupRegistration::MergeFrom(const GroupRegistration& from) {
     if (from.has_flags()) {
       set_flags(from.flags());
     }
+    if (from.has_clientname()) {
+      set_clientname(from.clientname());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -384,6 +441,7 @@ void GroupRegistration::Swap(GroupRegistration* other) {
     std::swap(groupid_, other->groupid_);
     std::swap(addtogroup_, other->addtogroup_);
     std::swap(flags_, other->flags_);
+    std::swap(clientname_, other->clientname_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

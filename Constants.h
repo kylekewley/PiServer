@@ -2,12 +2,12 @@
 #define Constants_h 
 
 #include <google/protobuf/message.h>
+#include <map>
 
 typedef enum {
     kEmptyParserID      = 0,
     kPingParserID       = 1,
-    kParserNotFoundID   = 2,
-    kParseErrorID       = 3
+    kParseErrorID       = 2
 }kDefaultParserID;
 
 
@@ -16,15 +16,36 @@ typedef std::pair<int, int> Range;
 
 
 typedef enum {
-    kHeaderConfirmation     = 1 << 0
+    kErrorMessage
 }kPiHeaderFlag;
 
 typedef enum {
-    kServerNoParserFound,
-    kClientNoParserFound,
-    kServerErrorParsingData,
-    kClientErrorParsingData
+    kNoParserFound,
+    kInvalidData,
+    kParserRuntimeException,
+    kUnimplementedParser,
+
 }kErrorCode;
+
+
+
+static std::string getErrorString(kErrorCode errorNo) {
+    
+    switch (errorNo) {
+        case kNoParserFound:
+            return std::string("There is no parser registered for the given parser ID.");
+        case kInvalidData:
+            return std::string("The data given to the parser was invalid.");
+        case kParserRuntimeException:
+            return std::string("The custom parser raised an exception and could not parse the data. This could result in undefined and unexpected behavior.");
+        case kUnimplementedParser:
+            return std::string("The custom parser subclass did not properly override the required methods.");
+            
+        default:
+            return std::string("Unknown Error");
+    }
+}
+
 
 
 typedef int16_t prefix_t;

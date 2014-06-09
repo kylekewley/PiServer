@@ -1,0 +1,4 @@
+message ParseError {
+	optional uint32 errorNumber = 1;
+	optional string errorMessage = 2;
+}

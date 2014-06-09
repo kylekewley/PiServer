@@ -1,7 +1,6 @@
 #ifndef Pi_Parser_h
 #define Pi_Parser_h
 
-#include "Constants.h"
 #include "CustomParserWrapper.h"
 #include <set>
 
