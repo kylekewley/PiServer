@@ -16,7 +16,7 @@ class Ping;
 class PingParser : public CustomBufferParser<Ping> {
 public:
     PingParser();
-	ProtocolBuffer *parseBuffer(const Ping *data);
+	ProtocolBuffer *parseBuffer(const Ping *data, int clientID);
 };
 
 #endif /* defined(__PiServer__PingParser__) */

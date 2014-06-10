@@ -8,7 +8,7 @@ using namespace std;
 TestParser::TestParser() {
 
 }
-ProtocolBuffer *TestParser::parseBuffer(const TestMessage *data) {
+ProtocolBuffer *TestParser::parseBuffer(const TestMessage *data, int clientID) {
 	TestMessage *message = new TestMessage();
     string responseString = string("Response to: ");
     if (data->has_message()) {

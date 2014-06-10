@@ -13,7 +13,7 @@ public:
 	CustomBufferParser(): inputMessage(new T()) {
         static_assert(std::is_base_of<ProtocolBuffer, T>::value, "T not derived from google::protocol::MessageLite");
     };
-	PiMessage parse(std::vector<char> data);
+	PiMessage parse(std::vector<char> data, int clientID);
     
     /**
      *Parse the MessageLite object and return another MessageLite 
@@ -24,7 +24,7 @@ public:
      *
      *@discussion   A subclass should return null if the client does not need a response.
      */
-	virtual ProtocolBuffer *parseBuffer(const T *data) = 0;
+	virtual ProtocolBuffer *parseBuffer(const T *data, int clientID) = 0;
 	
 };
 

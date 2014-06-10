@@ -13,7 +13,7 @@
 PingParser::PingParser() {
     
 }
-ProtocolBuffer *PingParser::parseBuffer(const Ping *data) {
+ProtocolBuffer *PingParser::parseBuffer(const Ping *data, int clientID) {
     Ping *message = new Ping(*data);
     return message;
 }

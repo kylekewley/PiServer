@@ -17,11 +17,11 @@ using namespace std;
 
 #pragma mark - Parsing
 template <typename T>
-PiMessage CustomBufferParser<T>::parse(std::vector<char> data) {
+PiMessage CustomBufferParser<T>::parse(std::vector<char> data, int clientID) {
 	inputMessage->ParseFromArray(data.data(), static_cast<int>(data.size()));
 	
     //Call the subclass's implementation of parseBuffer
-    ProtocolBuffer *outputBuffer = parseBuffer(inputMessage);
+    ProtocolBuffer *outputBuffer = parseBuffer(inputMessage, clientID);
     
     //Default to an empty PiMessage object that wont send data
     PiMessage tmpMessage;

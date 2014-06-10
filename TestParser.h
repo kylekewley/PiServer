@@ -9,6 +9,6 @@ class TestMessage;
 class TestParser : public CustomBufferParser<TestMessage> {
 public:
 	TestParser();
-	ProtocolBuffer *parseBuffer(const TestMessage *data);
+	ProtocolBuffer *parseBuffer(const TestMessage *data, int clientID);
 };
 #endif
