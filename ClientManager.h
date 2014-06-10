@@ -21,17 +21,22 @@
 #include "PiMessage.h"
 #include "PiParser.h"
 
+class PiServer;
+
 typedef enum MessageStatus
 {
 	MessageStatusNone, 		//Waiting for a message
 	MessageStatusPartial,	//Has a partial message
 }MessageStatus;
 
-typedef struct ClientStatus {
+typedef struct Client {
 	MessageStatus messageStatus; //Either no message or a partial message
     std::vector<char> message;		//Copy of the current message char array buffer
 	PiHeader header;
-}ClientStatus;
+    
+    uint32_t clientFlags;
+    std::vector<string> groups;
+}Client;
 
 class ClientManager {
 public:
@@ -41,7 +46,7 @@ public:
      *
      *@param    defaultParser   A weak pointer to the PiServer parser that will be used to generate responses
      */
-	ClientManager(PiParser *defaultParser);
+	ClientManager(PiParser *defaultParser, PiServer *piServer);
 
 	/**
 	*Register a new client to track
@@ -61,19 +66,84 @@ public:
 	*/
 	void clientDisconnected(int portNumber);
 
+    
+    /**
+     *Adds the client to the group. Creates a new group if the groupID doesn't exist.
+     *
+     *@param    clientID    The ID of the client to register
+     *@param    groupID     The name of the group where the client should be added to
+     *
+     *@discussion       The clientFlags for the client will default to zero.
+     */
+    void addClientToGroup(int clientID, const std::string &groupID);
+    
+    /**
+     *Adds the client to the group. Creates a new group if the groupID doesn't exist.
+     *
+     *@param    clientID    The ID of the client to register
+     *@param    groupID     The name of the group where the client should be added to
+     *@param    clientFlags The flags to be set for the client
+     */
+    void addClientToGroup(int clientID, uint32_t clientFlags, const std::string &groupID);
+    
+    /**
+     *Removes the client to the group.
+     *
+     *@param    clientID    The ID of the client to register
+     *@param    groupID     The name of the group where the client should be removed from
+     */
+    void removeClientFromGroup(int clientID, const std::string &groupID);
+    
+    /**
+     *@param    groupID     The group to get the size of
+     *
+     *@return   The number of members belonging to the group.
+     */
+    int sizeOfGroup(const std::string &groupID);
+    
+    /**
+     *Sends a message to all members of the group with the given groupID
+     *
+     *@param    message     The message to send to members of the group
+     *@param    groupID     The groupID where the message should be sent to
+     */
+    void sendMessageToGroup(PiMessage &message, const std::string &groupID);
+    
+    /**
+     *Sends a message to specific members of the given group.
+     *
+     *@param    message     The message to send to members of the group
+     *@param    groupID     The groupID where the message should be sent to
+     *@param    clientFlags The flags that the client must match for the message to be sent
+     *
+     *@discussion   Each client is registered with an unsigned long flags variable which defaults
+            to zero. In order for the message to be sent to a client, the bitwise function
+            ((client.flags & clientFlags) != 0) must return true.
+     */
+    void sendMessageToGroup(PiMessage &message, const std::string &groupID, uint32_t clientFlags);
+    
     /**
      *Holds a weak reference to the server's default parser
      */
     PiParser *_defaultParser;
     
+    /**
+     *Holds a weak reference back to the server that created us
+     */
+    PiServer *_piServer;
+
 private:
-	std::map<int,ClientStatus> clientStatus;
+    
+    /**
+     *Associates each clientID with a client struct
+     */
+	std::map<int, Client> clientStatus;
 
     /**
      *The key is a group name
      *The value is a list of socket file descriptors that belong to the group
      */
-    std::map<std::string, std::vector<int>> groups;
+    std::map<std::string, std::set<int>> groups;
     /**
      *Create a char vector containing the header prefix + serialized header + reply
      */

@@ -16,6 +16,15 @@ public:
      *@param    port    The port to listen for clients on
      */
     PiServer(int port);
+    
+    /**
+     *Adds the message to the message queue for the client
+     *
+     *@param    clientID    The port the client is connected to
+     *@param    message     The message to send to the client
+     */
+    void sendMessageToClientWithID(int clientID, PiMessage &message);
+    
 private:
     /**
      *The port the server is connecting to

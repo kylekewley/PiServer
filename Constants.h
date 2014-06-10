@@ -16,7 +16,7 @@ typedef std::pair<int, int> Range;
 
 
 typedef enum {
-    kErrorMessage
+    kErrorMessage   = 1UL << 0
 }kPiHeaderFlag;
 
 typedef enum {

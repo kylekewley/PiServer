@@ -26,7 +26,7 @@ static const int kBufferSize = 16384; //16kb
 
 using namespace std;
 
-PiServer::PiServer(int port): _port(port), _clientManager(&_piParser) {
+PiServer::PiServer(int port): _port(port), _clientManager(&_piParser, this) {
     //Add the default parsers
     registerDefaultParsers();
     
@@ -34,6 +34,16 @@ PiServer::PiServer(int port): _port(port), _clientManager(&_piParser) {
 	string portString = to_string(port);
 	connectToPort(portString.c_str());
 }
+
+void PiServer::sendMessageToClientWithID(int clientID, PiMessage &message) {
+    
+    if (messageQueue.find(clientID) != messageQueue.end()) {
+        vector<PiMessage> clientMessageQueue = messageQueue[clientID];
+        clientMessageQueue.push_back(message);
+    }
+}
+
+#pragma mark - Private methods
 
 void PiServer::connectToPort(const char *port) {
 	//Figure out where to bind

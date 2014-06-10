@@ -1,5 +1,4 @@
 #include "PiServer.h"
-#include "PiParser.h"
 
 #define PORT_NUMBER     10002
 using namespace std;
@@ -10,7 +9,14 @@ char* binaryParser(char *data, int dataLength, PiHeader header) {
 
 int main(int argc, char **argv) {
     
-    PiServer piServer = PiServer(PORT_NUMBER);
+    while (true) {
+        try {
+            PiServer piServer = PiServer(PORT_NUMBER);
+        } catch (exception e) {
+            cerr << "PiServer crashed with exception: " << e.what() << endl;
+        }
+
+    }
 
     return 0;
 }

@@ -13,7 +13,7 @@ public:
 	
     bool registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd);
 
-	PiMessage parseData(PiHeader &header, std::vector<char> data);
+	PiMessage parseData(PiHeader &header, std::vector<char> data, int clientID);
 
 	/**
 	*data is prefixed with a 

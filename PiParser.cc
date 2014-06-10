@@ -26,7 +26,7 @@ bool PiParser::parserRangeValid(CustomParserWrapper &wrapper) {
 	return _parserSet.find(wrapper) == _parserSet.end();
 }
 
-PiMessage PiParser::parseData(PiHeader &header, std::vector<char> data) {
+PiMessage PiParser::parseData(PiHeader &header, std::vector<char> data, int clientID) {
     
     PiMessage response;
     
@@ -45,7 +45,7 @@ PiMessage PiParser::parseData(PiHeader &header, std::vector<char> data) {
 	
     
     try {
-        response = wrapper.parser->parse(data);
+        response = wrapper.parser->parse(data, clientID);
         
         if (response.isEmpty && header.successresponse()) {
             //Just send a header back
