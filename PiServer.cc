@@ -14,7 +14,7 @@
 
 #include "PingParser.h"
 #include "TestParser.h"
-
+#include "GroupRegistrationParser.h"
 
 /**
 *The number of pending client connections to allow
@@ -170,8 +170,13 @@ void PiServer::listenForClients(int serverfd) {
                         FD_CLR(sockfd, &masterfds);
 					}else {
 						//Read the message
-						PiMessage response = _clientManager.receivedMessageOnPort(buffer, length, sockfd);
-                        messageQueue[sockfd].push_back(response);
+                        unsigned long totalLengthUsed = 0;
+                        do {
+                            unsigned long lengthUsed;
+                            PiMessage response = _clientManager.receivedMessageOnPort(buffer, length, &lengthUsed, sockfd);
+                            messageQueue[sockfd].push_back(response);
+                            totalLengthUsed += lengthUsed;
+                        }while (totalLengthUsed < length);
 					}
 				}
 			}
@@ -239,4 +244,7 @@ void * PiServer::getInternetAddress(struct sockaddr *sa) {
 
 void PiServer::registerDefaultParsers() {
     _piParser.registerParserForID(new PingParser(), kPingParserID, kPingParserID);
+    _piParser.registerParserForID(new GroupRegistrationParser(_clientManager), kGroupParserID, kGroupParserID);
 }
+
+

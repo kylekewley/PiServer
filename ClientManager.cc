@@ -18,48 +18,72 @@ void ClientManager::newClientConnection(int portNumber) {
 	clientStatus[portNumber] = newStatus;
 }
 
-PiMessage ClientManager::receivedMessageOnPort(const char *message, int messageLength, int portNumber) {
+void printMessage(const char *message, size_t messageLength) {
+    cout << "Received Message: ";
+    for (int i = 0; i < messageLength; i++) {
+        cout << hex << ((message[i] & 0xFFFF0000)>>4) << hex << (message[i] & 0x0000FFFF);
+    }
+    
+    cout << endl;
+}
+PiMessage ClientManager::receivedMessageOnPort(const char *message, size_t messageLength, unsigned long *lengthUsed, int portNumber) {
 	if (!clientStatus.count(portNumber)) {
 		newClientConnection(portNumber);
 	}
-	Client status = clientStatus[portNumber];
-
-	if (status.messageStatus == MessageStatusNone) {
-		//Brand new message. Get the header length and header
-		uint16_t headerLength;
-        int prefixBytes = sizeof(headerLength);
-		memcpy(&headerLength, message, prefixBytes);
-		headerLength = ntohs(headerLength);
-
-		PiHeader header;
-		header.ParseFromArray(message+prefixBytes, headerLength);
-        
-        cout << "Message size: " << header.messagelength() << endl;
-        //Initialize from a char array
-        const char *messageStart = message+prefixBytes+headerLength;
-        const char *messageEnd = messageStart+header.messagelength();
-        
-		status.message = std::vector<char>(messageStart, messageEnd);
-		status.messageStatus = MessageStatusPartial;
-		status.header = header;
-	}else {
-		//Already part of an old message
-		status.message.insert(status.message.end(), message, message+messageLength);
-	}
-
-	PiMessage response;
+    printMessage(message, messageLength);
     
-    cout << "Message on port: " << to_string(portNumber) << " total size: " << to_string(status.header.messagelength()) << " received size: " << status.message.size() << endl;
+	Client &status = clientStatus[portNumber];
 
-	//Check if message is complete
-	if (status.header.messagelength() - status.message.size() <= 0) {
-		//Parse it and clear
-		status.messageStatus = MessageStatusNone;
+    *lengthUsed = 0;
+    
+    if (status.messageStatus == MessageStatusNone) {
+        //Brand new message. Get the header length and header
+        bool done = parseHeaderLengthWithPartial(message+*lengthUsed, messageLength-*lengthUsed, status.message, lengthUsed, &status.headerLength);
         
-        response = _defaultParser->parseData(status.header, status.message, portNumber);
-	}
+        if (done) {
+            status.messageStatus = MessageStatusPartialHeader;
+            status.message = vector<char>();
+        }
+    }
+    
+    if (status.messageStatus == MessageStatusPartialHeader) {
+        unsigned long tmpUsed;
+        
+        bool done = parseHeaderWithPartial(message+*lengthUsed, messageLength-*lengthUsed, status.message, status.headerLength, &tmpUsed, &status.header);
+        *lengthUsed += tmpUsed;
+        
+        if (done) {
+            status.messageStatus = MessageStatusPartialMessage;
+            status.message = vector<char>();
+            
+        }
+    }
+    
+    if (status.messageStatus == MessageStatusPartialMessage) {
+        unsigned long tmpUsed;
+        
+        copyMessageData(message+*lengthUsed, messageLength-*lengthUsed, status.message, status.header.messagelength(), &tmpUsed);
+        *lengthUsed += tmpUsed;
+        
+        if (status.header.messagelength() == status.message.size()) {
+            PiMessage response;
+            
+            cout << "Message on port: " << to_string(portNumber) << " total size: " << to_string(status.header.messagelength()) << " received size: " << status.message.size() << endl;
+            
+            response = _defaultParser->parseData(status.header, status.message, portNumber);
 
-	return response;
+            //Parse it and clear
+            status.messageStatus = MessageStatusNone;
+            status.message = vector<char>();
+
+            
+            return response;
+
+        }
+    }
+    
+    
+    return PiMessage();
 }
 
 void ClientManager::clientDisconnected(int portNumber) {
@@ -91,7 +115,7 @@ void ClientManager::removeClientFromGroup(int clientID, const std::string &group
     group.erase(clientID);
 }
 
-int ClientManager::sizeOfGroup(const std::string &groupID) {
+size_t ClientManager::sizeOfGroup(const std::string &groupID) {
     return groups[groupID].size();
 }
 
@@ -114,3 +138,65 @@ void ClientManager::sendMessageToGroup(PiMessage &message, const std::string &gr
         }
     }
 }
+
+bool ClientManager::parseHeaderLengthWithPartial(const char *data, unsigned long dataSize, vector<char> &storedData, unsigned long *oBytesUsed, prefix_t *oHeaderLength) {
+    //Get bytes needed = prefix_t size - size we already have
+    unsigned long bytesNeeded = sizeof(prefix_t) - storedData.size();
+    
+    unsigned long bytesCopied = copyUpToLength(bytesNeeded, data, dataSize, storedData);
+    
+    *oBytesUsed = bytesCopied;
+    if (bytesCopied == bytesNeeded) {
+        //Got it all
+        prefix_t headerLength;
+        memcpy(&headerLength, storedData.data(), storedData.size());
+        headerLength = ntohp(headerLength);
+        *oHeaderLength = headerLength;
+        
+        return true;
+    }
+    
+    //Didn't get it all
+    return false;
+    
+}
+
+bool ClientManager::parseHeaderWithPartial(const char *data, unsigned long dataSize, vector<char> &storedData, prefix_t headerLength, unsigned long *oBytesUsed, PiHeader *oHeader) {
+    unsigned long bytesNeeded = headerLength - storedData.size();
+    
+    unsigned long bytesCopied = copyUpToLength(bytesNeeded, data, dataSize, storedData);
+    
+    *oBytesUsed = bytesCopied;
+    
+    if (bytesCopied == bytesNeeded) {
+        //Got it all
+        oHeader->ParseFromArray(storedData.data(), static_cast<int>(storedData.size()));
+        
+        return true;
+    }
+    //Didn't get it all
+    return false;
+}
+
+void ClientManager::copyMessageData(const char *newData, unsigned long dataSize, vector<char> &storedData, unsigned long messageLength, unsigned long *oBytesUsed) {
+    unsigned long bytesNeeded = messageLength - storedData.size();
+    
+    unsigned long bytesCopied = copyUpToLength(bytesNeeded, newData, dataSize, storedData);
+    *oBytesUsed = bytesCopied;
+}
+
+unsigned long ClientManager::copyUpToLength(unsigned long maxLength, const char *data, unsigned long dataSize, vector<char> &storedData) {
+    unsigned long initialSize = storedData.size();
+    
+    if (dataSize < maxLength) {
+        //Copy it all
+        storedData.insert(storedData.end(), data, data+dataSize);
+        
+    }else {
+        //Get the pointer so we can copy a set length
+        storedData.insert(storedData.end(), data, data+maxLength);
+    }
+    
+    return storedData.size() - initialSize;
+}
+

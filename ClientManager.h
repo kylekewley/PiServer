@@ -26,13 +26,15 @@ class PiServer;
 typedef enum MessageStatus
 {
 	MessageStatusNone, 		//Waiting for a message
-	MessageStatusPartial,	//Has a partial message
+    MessageStatusPartialHeader,
+	MessageStatusPartialMessage,	//Has a partial message
 }MessageStatus;
 
 typedef struct Client {
 	MessageStatus messageStatus; //Either no message or a partial message
     std::vector<char> message;		//Copy of the current message char array buffer
 	PiHeader header;
+    prefix_t headerLength;
     
     uint32_t clientFlags;
     std::vector<string> groups;
@@ -59,7 +61,7 @@ public:
 	*or handing the complete message off to the PiParser. The PiParser returns
 	*a response that the ClientManager sends back to the PiServer.
 	*/
-    PiMessage receivedMessageOnPort(const char *message, int messageLength, int portNumber);
+    PiMessage receivedMessageOnPort(const char *message, size_t messageLength, unsigned long *lengthUsed, int portNumber);
 
 	/**
 	*destroys the ClientStatus object associated with the port
@@ -99,7 +101,7 @@ public:
      *
      *@return   The number of members belonging to the group.
      */
-    int sizeOfGroup(const std::string &groupID);
+    size_t sizeOfGroup(const std::string &groupID);
     
     /**
      *Sends a message to all members of the group with the given groupID
@@ -148,6 +150,15 @@ private:
      *Create a char vector containing the header prefix + serialized header + reply
      */
     std::vector<char> generateMessage(PiHeader &header, std::vector<char> &reply);
+    
+    bool parseHeaderLengthWithPartial(const char *data, unsigned long dataSize, vector<char> &storedData, unsigned long *oBytesUsed, prefix_t *oHeaderLength);
+    
+    bool parseHeaderWithPartial(const char *data, unsigned long dataSize, vector<char> &storedData, prefix_t headerLength, unsigned long *oBytesUsed, PiHeader *oHeader);
+    
+    void copyMessageData(const char *newData, unsigned long dataSize, vector<char> &storedData, unsigned long messageLength, unsigned long *oBytesUsed);
+    
+    unsigned long copyUpToLength(unsigned long maxLength, const char *data, unsigned long dataSize, vector<char> &storedData);
+    
 };
 
 #endif

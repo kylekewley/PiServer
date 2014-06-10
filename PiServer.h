@@ -76,6 +76,7 @@ private:
      *the ClientManager upon initialization
      */
     void registerDefaultParsers();
+    
 };
 
 #endif

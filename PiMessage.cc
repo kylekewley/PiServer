@@ -17,25 +17,25 @@ static unsigned long uniqueMessageID = ULONG_MAX;
 PiMessage::PiMessage(): isEmpty(true) {
 }
 
-PiMessage::PiMessage(unsigned long parserID, vector<char> &message): isEmpty(false) {
+PiMessage::PiMessage(uint32_t parserID, vector<char> &message): isEmpty(false), totalBytesSent(0) {
     messageHeader = generateHeader(parserID, message.size());
     messageData = message;
 }
 
-PiMessage::PiMessage(unsigned long parserID, ProtocolBuffer &pBuffer): isEmpty(false) {
+PiMessage::PiMessage(uint32_t parserID, ProtocolBuffer &pBuffer): isEmpty(false), totalBytesSent(0) {
     messageHeader = generateHeader(parserID, pBuffer.ByteSize());
     
     messageData = serializeMessageToVector(pBuffer);
 
 }
 
-PiMessage::PiMessage(PiHeader &header, vector<char> &message): isEmpty(false), messageHeader(header), messageData(message) {}
+PiMessage::PiMessage(PiHeader &header, vector<char> &message): isEmpty(false), messageHeader(header), messageData(message), totalBytesSent(0) {}
 
-PiMessage::PiMessage(unsigned long parserID): isEmpty(false) {
+PiMessage::PiMessage(uint32_t parserID): isEmpty(false), totalBytesSent(0) {
     messageHeader = generateHeader(parserID, 0);
 }
 
-PiMessage::PiMessage(unsigned long parserID, unsigned long messageID): isEmpty(false) {
+PiMessage::PiMessage(uint32_t parserID, uint32_t messageID): isEmpty(false), totalBytesSent(0) {
     messageHeader = generateHeader(parserID, 0, messageID, 0);
 }
 
@@ -65,7 +65,7 @@ long PiMessage::writeToBuffer(void *buffer, long length) {
         return 0;
     
     if (headerData.size() == 0) {
-        headerData = serializeMessageToVector(messageHeader);
+        headerData = serializedVectorFromHeader(messageHeader);
     }
     
     long spaceRemaining = length;
@@ -125,7 +125,7 @@ long PiMessage::serializedSize() {
 
 #pragma mark - Private Methods
 
-PiHeader PiMessage::generateHeader(unsigned long parserID, unsigned long flags, unsigned long messageID, unsigned long messageLength) {
+PiHeader PiMessage::generateHeader(uint32_t parserID, uint32_t flags, uint32_t messageID, uint32_t messageLength) {
     PiHeader tmpHeader;
     
     tmpHeader.set_parserid(parserID);
@@ -136,11 +136,11 @@ PiHeader PiMessage::generateHeader(unsigned long parserID, unsigned long flags, 
     return tmpHeader;
 }
 
-PiHeader PiMessage::generateHeader(unsigned long parserID, unsigned long messageLength) {
+PiHeader PiMessage::generateHeader(uint32_t parserID, uint32_t messageLength) {
     return generateHeader(parserID, 0, --uniqueMessageID, messageLength);
 }
 
-vector<char> serializedVectorFromHeader(PiHeader &header) {
+vector<char> PiMessage::serializedVectorFromHeader(PiHeader &header) {
     vector<char> headerVector = vector<char>(header.ByteSize()+sizeof(prefix_t));
     
     char *vectorPtr = headerVector.data();

@@ -29,20 +29,20 @@ public:
      *@param    parserID    The PiServer parserID setup to parse the data
      *@param    message     binary data to send to the server
      */
-    PiMessage(unsigned long parserID, vector<char> &message);
+    PiMessage(uint32_t parserID, vector<char> &message);
     
     /**
      *@param    parserID    The PiServer parserID setup to parse the Protocol Buffer object
      *@param    pBuffer     The generated Protocol Buffer object to send to the server
      */
-    PiMessage(unsigned long parserID, ProtocolBuffer &pBuffer);
+    PiMessage(uint32_t parserID, ProtocolBuffer &pBuffer);
     
     /**
      *Constructor for when we just want to send a reply header with no data
      *
      *@param    parserID    The PiClient parserID setup to parse the header response
      */
-    PiMessage(unsigned long parserID);
+    PiMessage(uint32_t parserID);
     
     /**
      *Constructor for sending a PiMessage reply with a header and no data.
@@ -50,7 +50,7 @@ public:
      *@param    parserID    The PiClient parserID setup to parse the header response
      *@param    messageID   The ID of the message to send back to the client
      */
-    PiMessage(unsigned long parserID, unsigned long messageID);
+    PiMessage(uint32_t parserID, uint32_t messageID);
     
     /**
      *@param    header  The PiHeader to use for the message
@@ -125,13 +125,13 @@ private:
      *@abstract Create a new PiHeader object with the given values
      *
      */
-    PiHeader generateHeader(unsigned long parserID, unsigned long flags, unsigned long messageID, unsigned long messageLength);
+    PiHeader generateHeader(uint32_t parserID, uint32_t flags, uint32_t messageID, uint32_t messageLength);
     
     /**
      *Calls -headerBuilderWithParserID:flags:messageID:messageLength: with flags set to zero and a uniqueMessageID value
      *
      */
-    PiHeader generateHeader(unsigned long parserID, unsigned long messageLength);
+    PiHeader generateHeader(uint32_t parserID, uint32_t messageLength);
     
     /**
      *Create a new vector object with the PiHeader already written to it

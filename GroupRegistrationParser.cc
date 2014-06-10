@@ -20,8 +20,10 @@ ProtocolBuffer *GroupRegistrationParser::parseBuffer(const GroupRegistration *da
     uint32_t flags = 0;
     if (data->has_flags())
         flags = data->flags();
-    
-    _clientManager.addClientToGroup(clientID, flags, data->groupid());
+    if (data->addtogroup())
+        _clientManager.addClientToGroup(clientID, flags, data->groupid());
+    else
+        _clientManager.removeClientFromGroup(clientID, data->groupid());
     
     return NULL;
 }

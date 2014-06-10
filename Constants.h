@@ -7,7 +7,8 @@
 typedef enum {
     kEmptyParserID      = 0,
     kPingParserID       = 1,
-    kParseErrorID       = 2
+    kParseErrorID       = 2,
+    kGroupParserID      = 3
 }kDefaultParserID;
 
 
