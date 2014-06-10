@@ -23,11 +23,16 @@ PiMessage CustomBufferParser<T>::parse(std::vector<char> data) {
     //Call the subclass's implementation of parseBuffer
     ProtocolBuffer *outputBuffer = parseBuffer(inputMessage);
     
-    //Return a new PiMessage with a parserID of 0 and the returned outputBuffer
-    PiMessage tmpMessage = PiMessage(0, *outputBuffer);
+    //Default to an empty PiMessage object that wont send data
+    PiMessage tmpMessage;
     
-    //Delete the dynamically allocated ProtocolBuffer
-    delete outputBuffer;
+    if (outputBuffer != NULL) {
+        //Return a new PiMessage with a parserID of 0 and the returned outputBuffer
+        tmpMessage = PiMessage(0, *outputBuffer);
+        
+        //Delete the dynamically allocated ProtocolBuffer
+        delete outputBuffer;
+    }
 
     return tmpMessage;
 

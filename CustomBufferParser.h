@@ -21,6 +21,8 @@ public:
      *function.
      *@param    data    The data to parse
      *@return   A new ProtocolBuffer object to be sent back to the client
+     *
+     *@discussion   A subclass should return null if the client does not need a response.
      */
 	virtual ProtocolBuffer *parseBuffer(const T *data) = 0;
 	
