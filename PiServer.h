@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "ClientManager.h"
+#include "PiParser.h"
 
 #include "PiMessage.h"
 
@@ -25,10 +26,17 @@ private:
      *The messageQueue holds outgoing messages based on each connection's socketfd
      */
     map<int, vector<PiMessage>> messageQueue;
+    
     /**
     *Manages the status of client connections and messages
     */
     ClientManager _clientManager;
+    
+    /**
+     *Manages the different parsers that will handle incoming messages
+     */
+    PiParser _piParser;
+    
     /**
     *This is a method used to create a tcp connection.
     *This method binds to a port, then calls listenForClients(),

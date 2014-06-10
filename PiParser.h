@@ -9,10 +9,9 @@ class PiHeader;
 class PiParser
 {
 public:
-	static PiParser& getInstance();
-
-
-	bool registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd);
+    PiParser();
+	
+    bool registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd);
 
 	PiMessage parseData(PiHeader &header, std::vector<char> data);
 
@@ -21,9 +20,6 @@ public:
 	*/
 	int getHeaderLengthPrefix(char *data);
 private:
-	PiParser();
-	PiParser(PiParser const&);          // Don't Implement
-	void operator=(PiParser const&); 	// Don't implement
 
 	bool parserRangeValid(CustomParserWrapper &wrapper);
 	std::set<CustomParserWrapper, ParserWrapperCompare> _parserSet;

@@ -26,7 +26,7 @@ static const int kBufferSize = 16384; //16kb
 
 using namespace std;
 
-PiServer::PiServer(int port): _port(port) {
+PiServer::PiServer(int port): _port(port), _clientManager(&_piParser) {
     //Add the default parsers
     registerDefaultParsers();
     
@@ -228,5 +228,5 @@ void * PiServer::getInternetAddress(struct sockaddr *sa) {
 }
 
 void PiServer::registerDefaultParsers() {
-    PiParser::getInstance().registerParserForID(new PingParser(), kPingParserID, kPingParserID);
+    _piParser.registerParserForID(new PingParser(), kPingParserID, kPingParserID);
 }

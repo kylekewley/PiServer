@@ -2,14 +2,8 @@
 #include "PiErrorMessage.h"
 #include "PiHeader.pb.h"
 
-PiParser& PiParser::getInstance() {
-	static PiParser sharedInstance;
-
-	return sharedInstance;
-}
 
 PiParser::PiParser() {
-
 }
 
 bool PiParser::registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd) {

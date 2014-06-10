@@ -4,7 +4,7 @@
 #include <iostream>
 using namespace std;
 #pragma mark - Constructors
-ClientManager::ClientManager() {
+ClientManager::ClientManager(PiParser *defaultParser): _defaultParser(defaultParser) {
 
 }
 #pragma mark - Desctuctors
@@ -55,7 +55,7 @@ PiMessage ClientManager::receivedMessageOnPort(const char *message, int messageL
 		//Parse it and clear
 		status.messageStatus = MessageStatusNone;
         
-        response = PiParser::getInstance().parseData(status.header, status.message);
+        response = _defaultParser->parseData(status.header, status.message);
 	}
 
 	return response;

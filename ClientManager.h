@@ -19,6 +19,7 @@
 #include <string>
 #include "PiHeader.pb.h"
 #include "PiMessage.h"
+#include "PiParser.h"
 
 typedef enum MessageStatus
 {
@@ -34,7 +35,13 @@ typedef struct ClientStatus {
 
 class ClientManager {
 public:
-	ClientManager();
+    
+    /**
+     *Initialize the client manager with a PiParser
+     *
+     *@param    defaultParser   A weak pointer to the PiServer parser that will be used to generate responses
+     */
+	ClientManager(PiParser *defaultParser);
 
 	/**
 	*Register a new client to track
@@ -54,6 +61,11 @@ public:
 	*/
 	void clientDisconnected(int portNumber);
 
+    /**
+     *Holds a weak reference to the server's default parser
+     */
+    PiParser *_defaultParser;
+    
 private:
 	std::map<int,ClientStatus> clientStatus;
 
