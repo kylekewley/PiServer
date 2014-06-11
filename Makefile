@@ -1,13 +1,29 @@
-SOURCES := ServerTests.cc  PiServer.cc PiParser.cc PiMessage.cc PiErrorMessage.cc PiHeader.pb.cc TestMessage.pb.cc Ping.pb.cc ParseError.pb.cc  GroupRegistration.pb.cc TestParser.cc PingParser.cc GroupRegistrationParser.cc ClientManager.cc
-OBJS = $(SOURCES:%.cc=%.o)
+LIBFILES :=  PiServer.cc PiParser.cc PiMessage.cc PiErrorMessage.cc PiHeader.pb.cc TestMessage.pb.cc Ping.pb.cc ParseError.pb.cc  GroupRegistration.pb.cc TestParser.cc PingParser.cc GroupRegistrationParser.cc ClientManager.cc
 
-CFLAGS := -std=c++11 -pthread 
-EXENAME := PiServer.out
-LINKFLAGS := -lpthread -lprotobuf 
+SRCDIR = src
+HEADERDIR := include
+LIBDIRECTORY := lib
+EXAMPLEDIR = example
+SOURCES := $(LIBFILES:%=$(SRCDIR)/%)
+
+OBJS = $(SOURCES:%.cc=%.o)
+HEADERS = $(LIBFILES:%.cc=$(HEADERDIR)/%.h)
+DEPEND = $(SOURCES:%.cc=%.d)
+
+CFLAGS := -I$(HEADERDIR) -std=c++11 -pthread
+LIBNAME := PiServer
+LINKFLAGS := -lpthread -lprotobuf
+
+EXAMPLESOURCES := $(EXAMPLEDIR)/ServerTests.cc
+EXAMPLEOBJS = $(EXAMPLESOURCES:%.cc=%.o)
+EXAMPLEEXE = ServerTest
+EXAMPLELINKFLAGS = -L$(LIBDIRECTORY) -l$(LIBNAME) -lprotobuf -lpthread -I$(HEADERDIR)
 
 # link
 PiServer: $(OBJS)
-	g++ $(OBJS) -o $(EXENAME) $(LINKFLAGS)
+	mkdir -p $(LIBDIRECTORY)
+	ar rvs $(LIBDIRECTORY)/lib$(LIBNAME).a $(OBJS)
+
 
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
@@ -23,7 +39,11 @@ PiServer: $(OBJS)
 
 # remove compilation products
 clean:
-	rm -f PiServer *.o *.d
+	rm -f $(EXAMPLEDIR)/$(EXAMPLEEXE) $(LIBDIRECTORY)/lib$(LIBNAME).a $(SRCDIR)/*.o $(SRCDIR)/*.d $(EXAMPLEDIR)/*.o $(EXAMPLEDIR)/*.d
 
 debug:
-	echo $(OBJS)
+	echo $(SOURCES)
+
+example: $(EXAMPLEOBJS)
+	g++ $(EXAMPLEOBJS) -o $(EXAMPLEDIR)/$(EXAMPLEEXE) $(EXAMPLELINKFLAGS)
+
