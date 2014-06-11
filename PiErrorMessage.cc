@@ -12,11 +12,19 @@
 
 #pragma mark - Constructors
 
-PiErrorMessage::PiErrorMessage(kErrorCode error, const string &errorMessage): parseError(generateParseErrorMessage(error, errorMessage)), PiMessage(kParseErrorID, parseError) {
-    setFlagTrue(kErrorMessage);
+PiErrorMessage::PiErrorMessage(kErrorCode error, const string &errorMessage): parseError(generateParseErrorMessage(error, errorMessage)) {
+    isEmpty = false;
+    
+    messageData = serializeMessageToVector(parseError);
+    messageHeader = generateHeader(kUnableToParseMessage, kErrorMessage, getUniqueMessageID(), parseError.ByteSize());
 }
 
-PiErrorMessage::PiErrorMessage(kErrorCode error): parseError(generateParseErrorMessage(error, getErrorString(error))), PiMessage(kParseErrorID, parseError) {
+PiErrorMessage::PiErrorMessage(kErrorCode error):parseError(generateParseErrorMessage(error, getErrorString(error))) {
+    isEmpty = false;
+    
+    messageData = serializeMessageToVector(parseError);
+    messageHeader = generateHeader(kUnableToParseMessage, kErrorMessage, getUniqueMessageID(), parseError.ByteSize());
+
 }
 
 #pragma mark - Private helper methods

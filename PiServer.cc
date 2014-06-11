@@ -115,9 +115,6 @@ void PiServer::listenForClients(int serverfd) {
 	*/
 	fd_set masterfds, readfds, writefds;
 
-	struct sockaddr_storage remoteaddr; // client address
-    socklen_t addrlen;
-
     FD_ZERO(&masterfds);    // clear the master and temp sets
     FD_ZERO(&readfds);
     FD_ZERO(&writefds);

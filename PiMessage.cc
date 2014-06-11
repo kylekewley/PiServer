@@ -7,26 +7,34 @@
 //
 
 #include "PiMessage.h"
+#include "ParseError.pb.h"
 
-//Used for generating unique message IDs
-//Clients start at 0 and count up, the server starts at ULONG_MAX and counts down
-static unsigned long uniqueMessageID = ULONG_MAX;
+#include <iostream>
 
 #pragma mark - Constructors
 
-PiMessage::PiMessage(): isEmpty(true) {
+PiMessage::PiMessage(): isEmpty(true), totalBytesSent(0) {
 }
 
 PiMessage::PiMessage(uint32_t parserID, vector<char> &message): isEmpty(false), totalBytesSent(0) {
-    messageHeader = generateHeader(parserID, message.size());
+    messageHeader = generateHeader(parserID, static_cast<uint32_t>(message.size()));
     messageData = message;
 }
 
 PiMessage::PiMessage(uint32_t parserID, ProtocolBuffer &pBuffer): isEmpty(false), totalBytesSent(0) {
-    messageHeader = generateHeader(parserID, pBuffer.ByteSize());
-    
-    messageData = serializeMessageToVector(pBuffer);
+    try {
+        messageHeader = generateHeader(parserID, pBuffer.ByteSize());
+        messageData = serializeMessageToVector(pBuffer);
+        
+    } catch (exception e) {
+        std::cerr << "Error creating a PiMessage from the buffer. Creating an error to send to the client" << std::endl;
+        ParseError errorResponse;
+        errorResponse.set_errormessage(getErrorString(kInvalidData));
+        errorResponse.set_errornumber(kInvalidData);
 
+        messageData = serializeMessageToVector(messageHeader);
+        messageHeader = generateHeader(kUnableToParseMessage, kErrorMessage, getUniqueMessageID(), errorResponse.ByteSize());
+    }
 }
 
 PiMessage::PiMessage(PiHeader &header, vector<char> &message): isEmpty(false), messageHeader(header), messageData(message), totalBytesSent(0) {}
@@ -137,7 +145,7 @@ PiHeader PiMessage::generateHeader(uint32_t parserID, uint32_t flags, uint32_t m
 }
 
 PiHeader PiMessage::generateHeader(uint32_t parserID, uint32_t messageLength) {
-    return generateHeader(parserID, 0, --uniqueMessageID, messageLength);
+    return generateHeader(parserID, 0, getUniqueMessageID(), messageLength);
 }
 
 vector<char> PiMessage::serializedVectorFromHeader(PiHeader &header) {

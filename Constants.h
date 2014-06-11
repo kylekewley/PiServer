@@ -4,8 +4,16 @@
 #include <google/protobuf/message.h>
 #include <map>
 
+//Used for generating unique message IDs
+//Clients start at 0 and count up, the server starts at ULONG_MAX and counts down
+static uint32_t kUniqueMessageID = UINT32_MAX;
+
+static uint32_t getUniqueMessageID() {
+    return --kUniqueMessageID;
+}
+
 typedef enum {
-    kEmptyParserID      = 0,
+    kEmptyParserID      = 0, //Don't register a parser for zero
     kPingParserID       = 1,
     kParseErrorID       = 2,
     kGroupParserID      = 3
@@ -25,7 +33,7 @@ typedef enum {
     kInvalidData,
     kParserRuntimeException,
     kUnimplementedParser,
-
+    kUnableToParseMessage
 }kErrorCode;
 
 
@@ -41,7 +49,8 @@ static std::string getErrorString(kErrorCode errorNo) {
             return std::string("The custom parser raised an exception and could not parse the data. This could result in undefined and unexpected behavior.");
         case kUnimplementedParser:
             return std::string("The custom parser subclass did not properly override the required methods.");
-            
+        case kUnableToParseMessage:
+            return std::string("The server was unable to parse the protocol buffer object");
         default:
             return std::string("Unknown Error");
     }

@@ -120,7 +120,7 @@ public:
     
     bool isEmpty;
 
-private:
+protected:
     /**
      *@abstract Create a new PiHeader object with the given values
      *

@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "CustomBufferParser.h"
+#include "PiErrorMessage.h"
 #include "Constants.h"
 
 using namespace std;
@@ -20,6 +21,11 @@ template <typename T>
 PiMessage CustomBufferParser<T>::parse(std::vector<char> data, int clientID) {
 	inputMessage->ParseFromArray(data.data(), static_cast<int>(data.size()));
 	
+    if (!inputMessage->IsInitialized()) {
+        //Unable to parse the message
+        return PiErrorMessage(kUnableToParseMessage);
+    }
+    
     //Call the subclass's implementation of parseBuffer
     ProtocolBuffer *outputBuffer = parseBuffer(inputMessage, clientID);
     

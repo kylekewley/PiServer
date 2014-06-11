@@ -36,11 +36,14 @@ PiMessage PiParser::parseData(PiHeader &header, std::vector<char> data, int clie
         if (header.successresponse()) {
             response = PiErrorMessage(kNoParserFound); //No parser found
         }else {
-            return PiMessage(); //Return an empty PiMessage (It wont get sent)
+            response = PiMessage(); //Return an empty PiMessage (It wont get sent)
         }
-        
-        
+        response.messageHeader.set_messageid(header.messageid());
+
+        return response;
 	}
+    
+    //We know we have a valid parser now
     CustomParserWrapper wrapper = *iterator;
 	
     
