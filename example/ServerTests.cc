@@ -26,9 +26,9 @@ int main(int argc, char **argv) {
             case 'p':
                 int portInput;
                 arg >> portInput;
-                if (portInput < 1024) {
+                if (portInput < 1024 || portInput > INT16_MAX) {
                     //Ports lower than 1024 are invalid
-                    cerr << "Ports below 1024 are reserved. Connecting to default port " << to_string(portNumber) << endl;
+                    cerr << "You entered an invalid port. Connecting to default port " << to_string(portNumber) << endl;
                 }else {
                     portNumber = portInput;
                 }
