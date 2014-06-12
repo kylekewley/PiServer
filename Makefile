@@ -10,7 +10,7 @@ OBJS = $(SOURCES:%.cc=%.o)
 HEADERS = $(LIBFILES:%.cc=$(HEADERDIR)/%.h)
 DEPEND = $(SOURCES:%.cc=%.d)
 
-CFLAGS := -I$(HEADERDIR) -std=c++11 -pthread
+CFLAGS := -I$(HEADERDIR) -std=c++11 -pthread -Wall -Wextra -Winit-self 
 LIBNAME := PiServer
 LINKFLAGS := -lpthread -lprotobuf
 
