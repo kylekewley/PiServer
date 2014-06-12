@@ -9,7 +9,7 @@ template <typename T> class CustomBufferParser : public CustomParser {
 protected:
 	T *inputMessage;
 public:
-    ~CustomBufferParser() {delete inputMessage;};
+    ~CustomBufferParser() {delete inputMessage; };
 	CustomBufferParser(): inputMessage(new T()) {
         static_assert(std::is_base_of<ProtocolBuffer, T>::value, "T not derived from google::protocol::MessageLite");
     };

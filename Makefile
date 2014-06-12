@@ -16,7 +16,7 @@ LINKFLAGS := -lpthread -lprotobuf
 
 EXAMPLESOURCES := $(EXAMPLEDIR)/ServerTests.cc
 EXAMPLEOBJS = $(EXAMPLESOURCES:%.cc=%.o)
-EXAMPLEEXE = ServerTest
+EXAMPLEEXE = ServerTests
 EXAMPLELINKFLAGS = -L$(LIBDIRECTORY) -l$(LIBNAME) -lprotobuf -lpthread -I$(HEADERDIR)
 
 # link
@@ -44,6 +44,6 @@ clean:
 debug:
 	echo $(SOURCES)
 
-example: $(EXAMPLEOBJS)
+example: PiServer $(EXAMPLEOBJS)
 	g++ $(EXAMPLEOBJS) -o $(EXAMPLEDIR)/$(EXAMPLEEXE) $(EXAMPLELINKFLAGS)
 

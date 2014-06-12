@@ -7,6 +7,7 @@
 class CustomParser {
 public:
 	CustomParser() {};
+    virtual ~CustomParser() {};
 	virtual PiMessage parse(std::vector<char> data, int clientID) {return PiErrorMessage(kUnimplementedParser); };
 };
 

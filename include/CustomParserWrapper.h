@@ -15,7 +15,7 @@ public:
 	*The object used to parse the the ParserMessage
 	*/
 	CustomParser *parser;
-
+    
 	CustomParserWrapper(Range r, CustomParser *p): range(r), parser(p) {};
 	CustomParserWrapper(int parserID): range(Range(parserID, parserID)) {};
     

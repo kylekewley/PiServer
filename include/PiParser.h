@@ -10,7 +10,8 @@ class PiParser
 {
 public:
     PiParser();
-	
+	~PiParser(); //Free all of the custom parsers
+    
     bool registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd);
 
 	PiMessage parseData(PiHeader &header, std::vector<char> data, int clientID);

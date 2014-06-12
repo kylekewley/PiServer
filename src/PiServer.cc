@@ -87,12 +87,13 @@ void PiServer::connectToPort(const char *port) {
 		break;
 	}
 
+    freeaddrinfo(ai); //Free our linked address info list
+
 	if (p == NULL) { 
 		//Got to the end of the linked list without binding to a socket
 		throw runtime_error("PiServer failed to bind to socket.");
 	}
 
-	freeaddrinfo(ai); //Free our linked address info list
 
 	//Mark the socket as ready to listen for incoming connections
 
@@ -152,7 +153,7 @@ void PiServer::listenForClients(int serverfd) {
 					connectToClient(serverfd, &masterfds, &maxfd);
 				}else {
 					//We have a message
-					ssize_t length = recv(sockfd, buffer, kBufferSize, 0);
+					ssize_t length = recv(sockfd, buffer, sizeof(buffer), 0);
 
 					if (length <= 0) {
 						if (length == 0) {
@@ -240,6 +241,7 @@ void * PiServer::getInternetAddress(struct sockaddr *sa) {
 }
 
 void PiServer::registerDefaultParsers() {
+
     _piParser.registerParserForID(new PingParser(), kPingParserID, kPingParserID);
     _piParser.registerParserForID(new GroupRegistrationParser(_clientManager), kGroupParserID, kGroupParserID);
 }

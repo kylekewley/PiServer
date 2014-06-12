@@ -19,6 +19,8 @@ lo
 *.exe
 *.out
 *.app
+*.a
+ServerTests
 
 #python files
 *.py

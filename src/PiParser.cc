@@ -7,6 +7,12 @@ PiParser::PiParser() {
 
 }
 
+PiParser::~PiParser() {
+    for (CustomParserWrapper wrapper : _parserSet) {
+        delete wrapper.parser;
+    }
+}
+
 bool PiParser::registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd) {
 	//Wrap the parser
 
