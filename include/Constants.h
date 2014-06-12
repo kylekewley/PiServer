@@ -2,13 +2,12 @@
 #define Constants_h 
 
 #include <google/protobuf/message.h>
-#include <map>
 
 //Used for generating unique message IDs
 //Clients start at 0 and count up, the server starts at ULONG_MAX and counts down
 static uint32_t kUniqueMessageID = UINT32_MAX;
 
-static uint32_t getUniqueMessageID() {
+inline uint32_t getUniqueMessageID() {
     return --kUniqueMessageID;
 }
 
@@ -38,7 +37,7 @@ typedef enum {
 
 
 
-static std::string getErrorString(kErrorCode errorNo) {
+inline std::string getErrorString(kErrorCode errorNo) {
     
     switch (errorNo) {
         case kNoParserFound:
