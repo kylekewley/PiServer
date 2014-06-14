@@ -1,4 +1,0 @@
-
-message TestMessage {
-	required string message = 1;
-}

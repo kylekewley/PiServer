@@ -1,3 +1,5 @@
+option java_outer_classname = "PingProto";
+option optimize_for = LITE_RUNTIME;
 
 message Ping {
 	optional uint32 sentTime = 1;
