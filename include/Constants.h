@@ -2,6 +2,7 @@
 #define Constants_h 
 
 #include <google/protobuf/message.h>
+#include <netinet/in.h>
 
 //Used for generating unique message IDs
 //Clients start at 0 and count up, the server starts at ULONG_MAX and counts down
