@@ -3,14 +3,15 @@
 
 #include "PiErrorMessage.h"
 #include "Constants.h"
-
+#include <iostream>
 class CustomParser {
 public:
 	CustomParser() {};
+    CustomParser(const CustomParser& parser) {std::cout << "Creating copy" << std::endl;};
     virtual ~CustomParser() {};
-	virtual PiMessage parse(std::vector<char>, int) {return PiErrorMessage(kUnimplementedParser); };
+	virtual PiMessage parse(std::vector<char>, int) const {return PiErrorMessage(kUnimplementedParser); };
     
-    virtual CustomParser* clone() const = 0;
+    
 };
 
 #endif

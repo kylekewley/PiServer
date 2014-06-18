@@ -16,10 +16,8 @@ GroupRegistrationParser::GroupRegistrationParser(ClientManager &clientManager): 
     
 }
 
-GroupRegistrationParser::GroupRegistrationParser(const GroupRegistrationParser &groupRegistrationParser): _clientManager(groupRegistrationParser._clientManager) {
-}
 
-ProtocolBuffer *GroupRegistrationParser::parseBuffer(const GroupRegistration *data, int clientID) {
+ProtocolBuffer *GroupRegistrationParser::parseBuffer(const GroupRegistration *data, int clientID) const{
     //Register with the clientManager given in the constructor
     uint32_t flags = 0;
     if (data->has_flags())
@@ -32,6 +30,3 @@ ProtocolBuffer *GroupRegistrationParser::parseBuffer(const GroupRegistration *da
     return NULL;
 }
 
-GroupRegistrationParser* GroupRegistrationParser::clone() const {
-    return new GroupRegistrationParser(*this);
-}

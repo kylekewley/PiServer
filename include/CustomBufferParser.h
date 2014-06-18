@@ -7,13 +7,13 @@
 
 template <typename T> class CustomBufferParser : public CustomParser {
 protected:
-	T *inputMessage;
+	mutable T inputMessage;
 public:
-    ~CustomBufferParser() {delete inputMessage; };
-	CustomBufferParser(): inputMessage(new T()) {
+    ~CustomBufferParser() {};
+	CustomBufferParser() {
         static_assert(std::is_base_of<ProtocolBuffer, T>::value, "T not derived from google::protocol::MessageLite");
     };
-	PiMessage parse(std::vector<char> data, int clientID);
+	PiMessage parse(std::vector<char> data, int clientID) const;
     
     /**
      *Parse the MessageLite object and return another MessageLite 
@@ -24,7 +24,7 @@ public:
      *
      *@discussion   A subclass should return null if the client does not need a response.
      */
-	virtual ProtocolBuffer *parseBuffer(const T *data, int clientID) = 0;
+	virtual ProtocolBuffer *parseBuffer(const T *data, int clientID) const = 0;
 	
 };
 

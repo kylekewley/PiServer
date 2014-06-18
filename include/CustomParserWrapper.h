@@ -9,22 +9,16 @@ public:
 	/**
 	*The range of message IDs to parse
 	*/
-	Range range;
+	const Range range;
 	
 	/**
 	*The object used to parse the the ParserMessage
 	*/
-	CustomParser *parser;
+    std::shared_ptr<CustomParser> parser;
     
-	CustomParserWrapper(Range r, CustomParser *p);
+	CustomParserWrapper(Range r, std::shared_ptr<CustomParser> &p);
     
 	CustomParserWrapper(int parserID);
-    
-    CustomParserWrapper(const CustomParserWrapper& customParserWrapper);
-    
-    ~CustomParserWrapper();
-    
-    CustomParserWrapper& operator=(const CustomParserWrapper& customParserWrapper);
     
 };
 

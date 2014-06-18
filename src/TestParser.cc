@@ -9,12 +9,8 @@ TestParser::TestParser() {
 
 }
 
-TestParser::TestParser(const TestParser& testParser) {
-    
-}
 
-
-ProtocolBuffer *TestParser::parseBuffer(const TestMessage *data, int clientID) {
+ProtocolBuffer *TestParser::parseBuffer(const TestMessage *data, int clientID) const {
 	TestMessage *message = new TestMessage();
     string responseString = string("Response to: ");
     if (data->has_message()) {
@@ -28,6 +24,3 @@ ProtocolBuffer *TestParser::parseBuffer(const TestMessage *data, int clientID) {
     return message;
 }
 
-TestParser* TestParser::clone() const {
-    return new TestParser(*this);
-}

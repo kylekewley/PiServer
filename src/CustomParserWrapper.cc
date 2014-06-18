@@ -9,24 +9,10 @@
 #include "CustomParserWrapper.h"
 
 
-CustomParserWrapper::CustomParserWrapper(Range r, CustomParser *p): range(r), parser(p->clone()) {
+CustomParserWrapper::CustomParserWrapper(Range r, std::shared_ptr<CustomParser> &p): range(r), parser(p) {
 
 }
 
-CustomParserWrapper::CustomParserWrapper(int parserID): range(Range(parserID, parserID)), parser(NULL) {
+CustomParserWrapper::CustomParserWrapper(int parserID): range(Range(parserID, parserID)) {
     
-}
-
-CustomParserWrapper::CustomParserWrapper(const CustomParserWrapper& customParserWrapper): range(customParserWrapper.range), parser(customParserWrapper.parser->clone()) {
-    
-}
-
-CustomParserWrapper& CustomParserWrapper::operator=(const CustomParserWrapper& customParserWrapper) {
-    range = customParserWrapper.range;
-    parser = customParserWrapper.parser->clone();
-    return *this;
-}
-
-CustomParserWrapper::~CustomParserWrapper() {
-    delete parser;
 }

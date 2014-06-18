@@ -10,17 +10,16 @@
 #define __PiServer__PingParser__
 
 #include "CustomBufferParser.imp.h"
-
+#include "Ping.pb.h"
+#include <iostream>
 class Ping;
 
 class PingParser : public CustomBufferParser<Ping> {
 public:
     PingParser();
-    PingParser(const PingParser&);
+
+	ProtocolBuffer *parseBuffer(const Ping *data, int clientID) const;
     
-	ProtocolBuffer *parseBuffer(const Ping *data, int clientID);
-    
-    PingParser* clone() const;
 };
 
 

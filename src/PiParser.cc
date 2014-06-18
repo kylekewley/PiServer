@@ -10,7 +10,7 @@ PiParser::PiParser() {
 PiParser::~PiParser() {
 }
 
-bool PiParser::registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd) {
+bool PiParser::registerParserForID(std::shared_ptr<CustomParser> &parser, int functionIDStart, int functionIDEnd) {
 	//Wrap the parser
 
 	Range r = Range(functionIDStart, functionIDEnd);
@@ -47,10 +47,10 @@ PiMessage PiParser::parseData(PiHeader &header, std::vector<char> data, int clie
 	}
     
     //We know we have a valid parser now
-	
-    
+	const CustomParserWrapper &wrapper = *iterator;
+
     try {
-        response = iterator->parser->parse(data, clientID);
+        response = wrapper.parser->parse(data, clientID);
         
         if (response.isEmpty && header.successresponse()) {
             //Just send a header back

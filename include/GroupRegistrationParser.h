@@ -10,6 +10,7 @@
 #define __PiServer__GroupRegistrationParser__
 
 #include "CustomBufferParser.imp.h"
+#include "GroupRegistration.pb.h"
 
 class GroupRegistration;
 class ClientManager;
@@ -17,12 +18,9 @@ class ClientManager;
 class GroupRegistrationParser : public CustomBufferParser<GroupRegistration> {
 public:
     GroupRegistrationParser(ClientManager &clientManager);
+        
+	ProtocolBuffer *parseBuffer(const GroupRegistration *data, int clientID) const;
     
-    GroupRegistrationParser(const GroupRegistrationParser& groupRegistrationParser);
-    
-	ProtocolBuffer *parseBuffer(const GroupRegistration *data, int clientID);
-    
-    GroupRegistrationParser* clone() const;
 private:
     ClientManager &_clientManager;
 };

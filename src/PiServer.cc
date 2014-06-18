@@ -241,9 +241,14 @@ void * PiServer::getInternetAddress(struct sockaddr *sa) {
 }
 
 void PiServer::registerDefaultParsers() {
-
-    _piParser.registerParserForID(new PingParser(), kPingParserID, kPingParserID);
-    _piParser.registerParserForID(new GroupRegistrationParser(_clientManager), kGroupParserID, kGroupParserID);
+    
+    
+    std::shared_ptr<CustomParser> pp(new PingParser());
+    std::shared_ptr<CustomParser> gp(new GroupRegistrationParser(_clientManager));
+    
+    
+    _piParser.registerParserForID(pp, kPingParserID, kPingParserID);
+    _piParser.registerParserForID(gp, kGroupParserID, kGroupParserID);
 }
 
 

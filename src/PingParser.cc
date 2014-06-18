@@ -14,15 +14,8 @@ PingParser::PingParser() {
     
 }
 
-PingParser::PingParser(const PingParser& pingParser) {
-    //Nothing to copy
-}
-
-ProtocolBuffer *PingParser::parseBuffer(const Ping *data, int clientID) {
+ProtocolBuffer *PingParser::parseBuffer(const Ping *data, int clientID) const {
     Ping *message = new Ping(*data);
     return message;
 }
 
-PingParser* PingParser::clone() const{
-    return new PingParser(*this);
-}
