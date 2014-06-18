@@ -1,4 +1,4 @@
-LIBFILES :=  PiServer.cc PiParser.cc PiMessage.cc PiErrorMessage.cc PiHeader.pb.cc TestMessage.pb.cc Ping.pb.cc ParseError.pb.cc  GroupRegistration.pb.cc TestParser.cc PingParser.cc GroupRegistrationParser.cc ClientManager.cc
+LIBFILES :=  PiServer.cc PiParser.cc PiMessage.cc PiErrorMessage.cc PiHeader.pb.cc TestMessage.pb.cc Ping.pb.cc ParseError.pb.cc  GroupRegistration.pb.cc TestParser.cc PingParser.cc GroupRegistrationParser.cc ClientManager.cc CustomParserWrapper.cc
 
 SRCDIR = src
 HEADERDIR := include

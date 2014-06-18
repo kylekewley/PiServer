@@ -9,6 +9,8 @@ public:
 	CustomParser() {};
     virtual ~CustomParser() {};
 	virtual PiMessage parse(std::vector<char>, int) {return PiErrorMessage(kUnimplementedParser); };
+    
+    virtual CustomParser* clone() const = 0;
 };
 
 #endif

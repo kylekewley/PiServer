@@ -8,9 +8,6 @@ PiParser::PiParser() {
 }
 
 PiParser::~PiParser() {
-    for (CustomParserWrapper wrapper : _parserSet) {
-        delete wrapper.parser;
-    }
 }
 
 bool PiParser::registerParserForID(CustomParser *parser, int functionIDStart, int functionIDEnd) {
@@ -37,7 +34,7 @@ PiMessage PiParser::parseData(PiHeader &header, std::vector<char> data, int clie
     PiMessage response;
     
 	CustomParserWrapper dummyWrapper = CustomParserWrapper(header.parserid());
-	auto iterator = _parserSet.find(dummyWrapper);
+	std::set<CustomParserWrapper>::iterator iterator = _parserSet.find(dummyWrapper);
 	if (iterator == _parserSet.end()) {
         if (header.successresponse()) {
             response = PiErrorMessage(kNoParserFound); //No parser found
@@ -50,11 +47,10 @@ PiMessage PiParser::parseData(PiHeader &header, std::vector<char> data, int clie
 	}
     
     //We know we have a valid parser now
-    CustomParserWrapper wrapper = *iterator;
 	
     
     try {
-        response = wrapper.parser->parse(data, clientID);
+        response = iterator->parser->parse(data, clientID);
         
         if (response.isEmpty && header.successresponse()) {
             //Just send a header back

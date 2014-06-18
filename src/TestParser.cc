@@ -8,6 +8,12 @@ using namespace std;
 TestParser::TestParser() {
 
 }
+
+TestParser::TestParser(const TestParser& testParser) {
+    
+}
+
+
 ProtocolBuffer *TestParser::parseBuffer(const TestMessage *data, int clientID) {
 	TestMessage *message = new TestMessage();
     string responseString = string("Response to: ");
@@ -20,4 +26,8 @@ ProtocolBuffer *TestParser::parseBuffer(const TestMessage *data, int clientID) {
     
     cout << "Sending response " << responseString << endl;
     return message;
+}
+
+TestParser* TestParser::clone() const {
+    return new TestParser(*this);
 }

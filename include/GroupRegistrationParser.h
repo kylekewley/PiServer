@@ -17,8 +17,12 @@ class ClientManager;
 class GroupRegistrationParser : public CustomBufferParser<GroupRegistration> {
 public:
     GroupRegistrationParser(ClientManager &clientManager);
+    
+    GroupRegistrationParser(const GroupRegistrationParser& groupRegistrationParser);
+    
 	ProtocolBuffer *parseBuffer(const GroupRegistration *data, int clientID);
     
+    GroupRegistrationParser* clone() const;
 private:
     ClientManager &_clientManager;
 };

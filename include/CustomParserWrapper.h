@@ -16,8 +16,15 @@ public:
 	*/
 	CustomParser *parser;
     
-	CustomParserWrapper(Range r, CustomParser *p): range(r), parser(p) {};
-	CustomParserWrapper(int parserID): range(Range(parserID, parserID)) {};
+	CustomParserWrapper(Range r, CustomParser *p);
+    
+	CustomParserWrapper(int parserID);
+    
+    CustomParserWrapper(const CustomParserWrapper& customParserWrapper);
+    
+    ~CustomParserWrapper();
+    
+    CustomParserWrapper& operator=(const CustomParserWrapper& customParserWrapper);
     
 };
 
