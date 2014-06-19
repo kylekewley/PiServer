@@ -30,9 +30,9 @@ PiMessage ClientManager::receivedMessageOnPort(const char *message, size_t messa
 	if (!clientStatus.count(portNumber)) {
 		newClientConnection(portNumber);
 	}
-    printMessage(message, messageLength);
     
 	Client &status = clientStatus[portNumber];
+    
 
     *lengthUsed = 0;
     
@@ -67,8 +67,6 @@ PiMessage ClientManager::receivedMessageOnPort(const char *message, size_t messa
         
         if (status.header.messagelength() == status.message.size()) {
             PiMessage response;
-            
-            cout << "Message on port: " << to_string(portNumber) << " total size: " << to_string(status.header.messagelength()) << " received size: " << status.message.size() << endl;
             
             response = _defaultParser->parseData(status.header, status.message, portNumber);
 

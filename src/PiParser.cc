@@ -1,7 +1,7 @@
 #include "PiParser.h"
 #include "PiErrorMessage.h"
 #include "PiHeader.pb.h"
-
+#include <memory>
 
 PiParser::PiParser() {
 

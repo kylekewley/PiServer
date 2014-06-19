@@ -3,6 +3,7 @@
 
 #include "CustomParser.h"
 #include "Constants.h"
+#include <memory>
 
 class CustomParserWrapper {
 public:

@@ -3,6 +3,7 @@
 
 #include "CustomParserWrapper.h"
 #include <set>
+#include <memory>
 
 class PiHeader;
 

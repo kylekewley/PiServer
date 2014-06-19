@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-
+#include <memory>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -168,9 +168,9 @@ void PiServer::listenForClients(int serverfd) {
                         FD_CLR(sockfd, &masterfds);
 					}else {
 						//Read the message
-                        unsigned long totalLengthUsed = 0;
+                        ssize_t totalLengthUsed = 0;
                         do {
-                            unsigned long lengthUsed;
+                            size_t lengthUsed;
                             PiMessage response = _clientManager.receivedMessageOnPort(buffer, length, &lengthUsed, sockfd);
                             messageQueue[sockfd].push_back(response);
                             totalLengthUsed += lengthUsed;
@@ -184,7 +184,7 @@ void PiServer::listenForClients(int serverfd) {
                 if (toSend.size() != 0) {
                     PiMessage &currentMessage = toSend[0];
                     
-                    long writtenLength = currentMessage.writeToBuffer(buffer, sizeof(buffer));
+                    size_t writtenLength = currentMessage.writeToBuffer(buffer, sizeof(buffer));
 
                     size_t sentLength = send(sockfd, buffer, writtenLength, MSG_DONTWAIT);
                     

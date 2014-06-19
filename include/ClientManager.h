@@ -20,7 +20,7 @@
 #include "PiHeader.pb.h"
 #include "PiMessage.h"
 #include "PiParser.h"
-
+#include <memory>
 class PiServer;
 
 typedef enum MessageStatus

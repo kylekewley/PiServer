@@ -7,7 +7,6 @@
 class CustomParser {
 public:
 	CustomParser() {};
-    CustomParser(const CustomParser& parser) {std::cout << "Creating copy" << std::endl;};
     virtual ~CustomParser() {};
 	virtual PiMessage parse(std::vector<char>, int) const {return PiErrorMessage(kUnimplementedParser); };
     
