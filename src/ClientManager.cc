@@ -35,7 +35,7 @@ PiMessage ClientManager::receivedMessageOnPort(const char *message, size_t messa
     
 
     *lengthUsed = 0;
-    
+
     if (status.messageStatus == MessageStatusNone) {
         //Brand new message. Get the header length and header
         bool done = parseHeaderLengthWithPartial(message+*lengthUsed, messageLength-*lengthUsed, status.message, lengthUsed, &status.headerLength);

@@ -22,7 +22,7 @@
 *Refused error.
 */
 static const int kClientBacklog = 10;
-static const int kBufferSize = 16384; //16kb
+static const int kBufferSize = 16384 * 4; //64kb
 
 using namespace std;
 

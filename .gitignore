@@ -25,3 +25,6 @@ ServerTests
 #python files
 *.py
 *.pyc
+
+bin/
+build/

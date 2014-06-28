@@ -1,49 +1,196 @@
-LIBFILES :=  PiServer.cc PiParser.cc PiMessage.cc PiErrorMessage.cc PiHeader.pb.cc TestMessage.pb.cc Ping.pb.cc ParseError.pb.cc  GroupRegistration.pb.cc TestParser.cc PingParser.cc GroupRegistrationParser.cc ClientManager.cc CustomParserWrapper.cc
+#### PROJECT SETTINGS ####
+# The name of the executable to be created
+BIN_NAME := libPiServer.a 
+# Compiler used
+CXX ?= g++
+# Extension of source files used in the project
+SRC_EXT = cc
+# Path to the source directory, relative to the makefile
+SRC_PATH = src
+# General compiler flags
+COMPILE_FLAGS = -std=c++11 -Wall -Wextra -g
+# Additional release-specific flags
+RCOMPILE_FLAGS = -D NDEBUG
+# Additional debug-specific flags
+DCOMPILE_FLAGS = -D DEBUG
+# Add additional include paths
+INCLUDES = -I include
+INSTALL_HEADERS = include
+INSTALL_HEADERS_NAME = PiServer
+# General linker settings
+LINK_FLAGS = -lpthread -lprotobuf
+# Additional release-specific linker settings
+RLINK_FLAGS = 
+# Additional debug-specific linker settings
+DLINK_FLAGS = 
+# Destination directory, like a jail or mounted system
+DESTDIR = /
+# Install path (bin/ is appended automatically)
+INSTALL_PREFIX = usr/local
+#### END PROJECT SETTINGS ####
 
-SRCDIR = src
-HEADERDIR := include
-LIBDIRECTORY := lib
-EXAMPLEDIR = example
-SOURCES := $(LIBFILES:%=$(SRCDIR)/%)
+# Generally should not need to edit below this line
 
-OBJS = $(SOURCES:%.cc=%.o)
-HEADERS = $(LIBFILES:%.cc=$(HEADERDIR)/%.h)
-DEPEND = $(SOURCES:%.cc=%.d)
+# Shell used in this makefile
+# bash is used for 'echo -en'
+SHELL = /bin/bash
+# Clear built-in rules
+.SUFFIXES:
+# Programs for installation
+INSTALL = install
+INSTALL_PROGRAM = $(INSTALL)
+INSTALL_DATA = $(INSTALL) -m 644
 
-CFLAGS := -I$(HEADERDIR) -std=c++11 -pthread -Wall -Winit-self 
-LIBNAME := PiServer
-LINKFLAGS := -lpthread -lprotobuf
+# Verbose option, to output compile and link commands
+export V := false
+export CMD_PREFIX := @
+ifeq ($(V),true)
+	CMD_PREFIX := 
+endif
 
-EXAMPLESOURCES := $(EXAMPLEDIR)/ServerTests.cc
-EXAMPLEOBJS = $(EXAMPLESOURCES:%.cc=%.o)
-EXAMPLEEXE = ServerTests
-EXAMPLELINKFLAGS = -L$(LIBDIRECTORY) -l$(LIBNAME) -lprotobuf -lpthread -I$(HEADERDIR)
+# Combine compiler and linker flags
+release: export CXXFLAGS := $(CXXFLAGS) $(COMPILE_FLAGS) $(RCOMPILE_FLAGS)
+release: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(RLINK_FLAGS)
+debug: export CXXFLAGS := $(CXXFLAGS) $(COMPILE_FLAGS) $(DCOMPILE_FLAGS)
+debug: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(DLINK_FLAGS)
 
-# link
-PiServer: $(OBJS)
-	mkdir -p $(LIBDIRECTORY)
-	ar rvs $(LIBDIRECTORY)/lib$(LIBNAME).a $(OBJS)
+# Build and output paths
+release: export BUILD_PATH := build/release
+release: export BIN_PATH := bin/release
+debug: export BUILD_PATH := build/debug
+debug: export BIN_PATH := bin/debug
+install: export BIN_PATH := bin/release
 
+# Find all source files in the source directory, sorted by most
+# recently modified
+SOURCES = $(shell find $(SRC_PATH)/ -name '*.$(SRC_EXT)' -printf '%T@\t%p\n' \
+					| sort -k 1nr | cut -f2-)
+# fallback in case the above fails
+rwildcard = $(foreach d, $(wildcard $1*), $(call rwildcard,$d/,$2) \
+						$(filter $(subst *,%,$2), $d))
+ifeq ($(SOURCES),)
+	SOURCES := $(call rwildcard, $(SRC_PATH)/, *.$(SRC_EXT))
+endif
 
-# pull in dependency info for *existing* .o files
--include $(OBJS:.o=.d)
+# Set the object file names, with the source directory stripped
+# from the path, and the build path prepended in its place
+OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
+# Set the dependency files that will be used to add header dependencies
+DEPS = $(OBJECTS:.o=.d)
 
-# compile and generate dependency info
-%.o: %.cc
-	g++ -c $(CFLAGS) $*.cc -o $*.o 
-	g++ -MM $(CFLAGS) $*.cc > $*.d
+# Macros for timing compilation
+TIME_FILE = $(dir $@).$(notdir $@)_time
+START_TIME = date '+%s' > $(TIME_FILE)
+END_TIME = read st < $(TIME_FILE) ; \
+	$(RM) $(TIME_FILE) ; \
+	st=$$((`date '+%s'` - $$st - 86400)) ; \
+	echo `date -u -d @$$st '+%H:%M:%S'` 
 
-.c.o:
-	$(CC) -c $*.c -o $*.o
+# Version macros
+# Comment/remove this section to remove versioning
+USE_VERSION := false
+# If this isn't a git repo or the repo has no tags, git describe will return non-zero
+ifeq ($(shell git describe > /dev/null 2>&1 ; echo $$?), 0)
+	USE_VERSION := true
+	VERSION := $(shell git describe --tags --long --dirty --always | \
+		sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)-\?.*-\([0-9]*\)-\(.*\)/\1 \2 \3 \4 \5/g')
+	VERSION_MAJOR := $(word 1, $(VERSION))
+	VERSION_MINOR := $(word 2, $(VERSION))
+	VERSION_PATCH := $(word 3, $(VERSION))
+	VERSION_REVISION := $(word 4, $(VERSION))
+	VERSION_HASH := $(word 5, $(VERSION))
+	VERSION_STRING := \
+		"$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH).$(VERSION_REVISION)-$(VERSION_HASH)"
+	override CXXFLAGS := $(CXXFLAGS) \
+		-D VERSION_MAJOR=$(VERSION_MAJOR) \
+		-D VERSION_MINOR=$(VERSION_MINOR) \
+		-D VERSION_PATCH=$(VERSION_PATCH) \
+		-D VERSION_REVISION=$(VERSION_REVISION) \
+		-D VERSION_HASH=\"$(VERSION_HASH)\"
+endif
 
+# Standard, non-optimized release build
+.PHONY: release
+release: dirs
+ifeq ($(USE_VERSION), true)
+	@echo "Beginning release build v$(VERSION_STRING)"
+else
+	@echo "Beginning release build"
+endif
+	@$(START_TIME)
+	@$(MAKE) all --no-print-directory
+	@echo -n "Total build time: "
+	@$(END_TIME)
 
-# remove compilation products
+# Debug build for gdb debugging
+.PHONY: debug
+debug: dirs
+ifeq ($(USE_VERSION), true)
+	@echo "Beginning debug build v$(VERSION_STRING)"
+else
+	@echo "Beginning debug build"
+endif
+	@$(START_TIME)
+	@$(MAKE) all --no-print-directory
+	@echo -n "Total build time: "
+	@$(END_TIME)
+
+# Create the directories used in the build
+.PHONY: dirs
+dirs:
+	@echo "Creating directories"
+	@mkdir -p $(dir $(OBJECTS))
+	@mkdir -p $(BIN_PATH)
+
+# Installs to the set path
+.PHONY: install
+install:
+	@echo "Installing to $(DESTDIR)$(INSTALL_PREFIX)/lib"
+	@$(INSTALL_PROGRAM) $(BIN_PATH)/$(BIN_NAME) $(DESTDIR)$(INSTALL_PREFIX)/lib
+	@echo "Adding headers to $(DESTDIR)$(INSTALL_PREFIX)/include"
+	@cp -r $(INSTALL_HEADERS) $(DESTDIR)$(INSTALL_PREFIX)/include/$(INSTALL_HEADERS_NAME)
+
+# Uninstalls the program
+.PHONY: uninstall
+uninstall:
+	@echo "Removing $(DESTDIR)$(INSTALL_PREFIX)/lib/$(BIN_NAME)"
+	@$(RM) $(DESTDIR)$(INSTALL_PREFIX)/lib/$(BIN_NAME)
+	@echo "Removing $(DESTDIR)$(INSTALL_PREFIX)/include/$(INSTALL_HEADERS_NAME)"
+	@$(RM) -r $(DESTDIR)$(INSTALL_PREFIX)/include/$(INSTALL_HEADERS_NAME)
+
+# Removes all build files
+.PHONY: clean
 clean:
-	rm -f $(EXAMPLEDIR)/$(EXAMPLEEXE) $(LIBDIRECTORY)/lib$(LIBNAME).a $(SRCDIR)/*.o $(SRCDIR)/*.d $(EXAMPLEDIR)/*.o $(EXAMPLEDIR)/*.d
+	@echo "Deleting $(BIN_NAME) symlink"
+	@$(RM) $(BIN_NAME)
+	@echo "Deleting directories"
+	@$(RM) -r build
+	@$(RM) -r bin
 
-debug:
-	echo $(SOURCES)
+# Main rule, checks the executable and symlinks to the output
+all: $(BIN_PATH)/$(BIN_NAME)
+	@echo "Making symlink: $(BIN_NAME) -> $<"
+	@$(RM) $(BIN_NAME)
+	@ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
 
-example: PiServer $(EXAMPLEOBJS)
-	g++ $(EXAMPLEOBJS) -o $(EXAMPLEDIR)/$(EXAMPLEEXE) $(EXAMPLELINKFLAGS)
+# Link the executable
+$(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
+	@echo "Linking: $@"
+	@$(START_TIME)
+	ar rvs $(BIN_NAME) $(OBJECTS) 
+	@echo -en "\t Link time: "
+	@$(END_TIME)
+
+# Add dependency files, if they exist
+-include $(DEPS)
+
+# Source file rules
+# After the first compilation they will be joined with the rules from the
+# dependency files to provide header dependencies
+$(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
+	@echo "Compiling: $< -> $@"
+	@$(START_TIME)
+	$(CMD_PREFIX)$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
+	@echo -en "\t Compile time: "
+	@$(END_TIME)
 
