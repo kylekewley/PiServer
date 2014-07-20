@@ -1,6 +1,6 @@
 #### PROJECT SETTINGS ####
 # The name of the executable to be created
-BIN_NAME := libPiServer.a 
+BIN_NAME := libPiServer.so
 # Compiler used
 CXX ?= g++
 # Extension of source files used in the project
@@ -8,7 +8,7 @@ SRC_EXT = cc
 # Path to the source directory, relative to the makefile
 SRC_PATH = src
 # General compiler flags
-COMPILE_FLAGS = -std=c++11 -Wall -Wextra -g
+COMPILE_FLAGS = -std=c++11 -Wall -g -fPIC
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
@@ -18,7 +18,7 @@ INCLUDES = -I include
 INSTALL_HEADERS = include
 INSTALL_HEADERS_NAME = PiServer
 # General linker settings
-LINK_FLAGS = -lpthread -lprotobuf
+LINK_FLAGS = -lpthread -lprotobuf -shared
 # Additional release-specific linker settings
 RLINK_FLAGS = 
 # Additional debug-specific linker settings
@@ -178,7 +178,7 @@ all: $(BIN_PATH)/$(BIN_NAME)
 $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 	@echo "Linking: $@"
 	@$(START_TIME)
-	ar rvs $(BIN_NAME) $(OBJECTS) 
+	@$(CXX) -o $(BIN_PATH)/$(BIN_NAME) $(OBJECTS) $(LDFLAGS)
 	@echo -en "\t Link time: "
 	@$(END_TIME)
 
