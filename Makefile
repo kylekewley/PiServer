@@ -8,7 +8,7 @@ SRC_EXT = cc
 # Path to the source directory, relative to the makefile
 SRC_PATH = src
 # General compiler flags
-COMPILE_FLAGS = -std=c++11 -Wall -g -fPIC
+COMPILE_FLAGS = -std=c++11 -Wall -Wno-unknown-pragmas -g -fPIC
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags

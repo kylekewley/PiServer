@@ -23,7 +23,6 @@ lo
 ServerTests
 
 #python files
-*.py
 *.pyc
 
 bin/

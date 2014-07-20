@@ -18,7 +18,7 @@ void ClientManager::newClientConnection(int portNumber) {
 	clientStatus[portNumber] = newStatus;
 }
 
-void printMessage(const char *message, size_t messageLength) {
+void printMessage(const char *message, int messageLength) {
     cout << "Received Message: ";
     for (int i = 0; i < messageLength; i++) {
         cout << hex << ((message[i] & 0xFFFF0000)>>4) << hex << (message[i] & 0x0000FFFF);

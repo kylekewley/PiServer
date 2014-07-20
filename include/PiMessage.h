@@ -116,9 +116,10 @@ public:
      */
     long serializedSize();
     
+    bool isEmpty;
+
     PiHeader messageHeader;
     
-    bool isEmpty;
 
 protected:
     /**
@@ -165,7 +166,7 @@ protected:
     vector<char> headerData;
     vector<char> messageData;
     
-    long totalBytesSent;
+    unsigned long totalBytesSent;
 };
 
 #endif /* defined(__PiServer__PiMessage__) */
