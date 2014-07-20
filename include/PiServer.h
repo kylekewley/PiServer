@@ -18,13 +18,25 @@ public:
     PiServer(int port);
     
     /**
+     * @desc Create a new server that is not connected
+     */
+    PiServer();
+
+    
+    /**
      *Adds the message to the message queue for the client
      *
      *@param    clientID    The port the client is connected to
      *@param    message     The message to send to the client
      */
     void sendMessageToClientWithID(int clientID, PiMessage &message);
+
+    void connectToPort(int port);
+
+    ////Getters////
+    ClientManager& getClientManager();
     
+    PiParser& getPiParser();
 private:
     /**
      *The port the server is connecting to

@@ -146,9 +146,10 @@ dirs:
 .PHONY: install
 install:
 	@echo "Installing to $(DESTDIR)$(INSTALL_PREFIX)/lib"
-	@$(INSTALL_PROGRAM) $(BIN_PATH)/$(BIN_NAME) $(DESTDIR)$(INSTALL_PREFIX)/lib
+	$(INSTALL_PROGRAM) $(BIN_PATH)/$(BIN_NAME) $(DESTDIR)$(INSTALL_PREFIX)/lib
 	@echo "Adding headers to $(DESTDIR)$(INSTALL_PREFIX)/include"
-	@cp -r $(INSTALL_HEADERS) $(DESTDIR)$(INSTALL_PREFIX)/include/$(INSTALL_HEADERS_NAME)
+	mkdir -p $(DESTDIR)$(INSTALL_PREFIX)/include/$(INSTALL_HEADERS_NAME)
+	cp -r $(INSTALL_HEADERS)/*.h $(DESTDIR)$(INSTALL_PREFIX)/include/$(INSTALL_HEADERS_NAME)
 
 # Uninstalls the program
 .PHONY: uninstall

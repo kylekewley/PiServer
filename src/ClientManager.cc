@@ -98,6 +98,7 @@ void ClientManager::clientDisconnected(int portNumber) {
 
 void ClientManager::addClientToGroup(int clientID, const std::string &groupID) {
     groups[groupID].insert(clientID);
+    cout << "Adding client to group: " << groupID << endl;
 }
 
 void ClientManager::addClientToGroup(int clientID, uint32_t clientFlags, const std::string &groupID) {
