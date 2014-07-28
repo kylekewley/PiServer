@@ -122,6 +122,7 @@ void ClientManager::sendMessageToGroup(PiMessage &message, const std::string &gr
     std::set<int> &group = groups[groupID];
     std::cout << "Sending to group with count: " << to_string(group.size()) << std::endl;
     for (int clientID : group) {
+		std::cout << "Sending to client with ID " << to_string(clientID) << std::endl;
         _piServer->sendMessageToClientWithID(clientID, message);
     }
 }
