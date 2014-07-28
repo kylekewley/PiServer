@@ -120,7 +120,7 @@ size_t ClientManager::sizeOfGroup(const std::string &groupID) {
 
 void ClientManager::sendMessageToGroup(PiMessage &message, const std::string &groupID) {
     std::set<int> &group = groups[groupID];
-    
+    std::cout << "Sending to group with count: " << to_string(group.size()) << std::endl;
     for (int clientID : group) {
         _piServer->sendMessageToClientWithID(clientID, message);
     }

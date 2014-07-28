@@ -50,7 +50,6 @@ void PiServer::sendMessageToClientWithID(int clientID, PiMessage &message) {
 ClientManager& PiServer::getClientManager() {
     return _clientManager;
 }
-
 PiParser& PiServer::getPiParser() {
     return _piParser;
 }
