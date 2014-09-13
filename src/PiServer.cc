@@ -41,8 +41,8 @@ PiServer::PiServer(): _clientManager(&_piParser, this) {
 void PiServer::sendMessageToClientWithID(int clientID, PiMessage &message) {
 
     if (messageQueue.find(clientID) != messageQueue.end()) {
-        vector<PiMessage> clientMessageQueue = messageQueue[clientID];
-        clientMessageQueue.push_back(message);
+        messageQueue[clientID].push_back(message);
+		cout << "Message queue now contains: " << to_string(messageQueue[clientID].size()) << " items." << endl;
     }
 }
 
@@ -101,8 +101,7 @@ void PiServer::connectToPort(const char *port) {
         }
 
         //Successfully bound to a socket. Stop trying to bind to others
-        break;
-    }
+        break; }
 
     freeaddrinfo(ai); //Free our linked address info list
 
@@ -188,7 +187,7 @@ void PiServer::listenForClients(int serverfd) {
                         ssize_t totalLengthUsed = 0;
                         cout << "Received a message of size: " << to_string(length) << endl;
                         do {
-                            size_t lengthUsed;
+                            unsigned long lengthUsed;
                             PiMessage response = _clientManager.receivedMessageOnPort(buffer+totalLengthUsed, length-totalLengthUsed, &lengthUsed, sockfd);
                             messageQueue[sockfd].push_back(response);
                             totalLengthUsed += lengthUsed;
