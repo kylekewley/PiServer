@@ -13,7 +13,6 @@
 #include <fcntl.h>
 
 #include "PingParser.h"
-#include "TestParser.h"
 #include "GroupRegistrationParser.h"
 
 /**
@@ -179,6 +178,9 @@ void PiServer::listenForClients(int serverfd) {
                             //Error recieving data
                             cerr << "Error recieving data" << endl;
                         }
+                        // Remove from any groups
+                        _clientManager.clientDisconnected(sockfd);
+
                         //Close sockfd and remove from the master set
                         close(sockfd);
                         FD_CLR(sockfd, &masterfds);
